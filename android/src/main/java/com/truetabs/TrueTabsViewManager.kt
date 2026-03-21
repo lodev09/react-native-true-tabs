@@ -26,7 +26,7 @@ class TrueTabsViewManager : SimpleViewManager<TrueTabsView>(),
     if (items == null) return
     val tabItems = mutableListOf<TabItemData>()
     for (i in 0 until items.size()) {
-      val map = items.getMap(i)
+      val map = items.getMap(i) ?: continue
       tabItems.add(
         TabItemData(
           title = map.getString("title") ?: "",

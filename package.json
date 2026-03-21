@@ -1,7 +1,7 @@
 {
   "name": "react-native-true-tabs",
   "version": "0.1.0",
-  "description": "Flexible native tabs for React Native",
+  "description": "Decoupled native tabs for React Native",
   "main": "./lib/module/index.js",
   "types": "./lib/typescript/src/index.d.ts",
   "exports": {

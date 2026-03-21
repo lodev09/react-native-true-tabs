@@ -54,6 +54,11 @@ class TrueTabsView(context: Context) : FrameLayout(context) {
     }
   }
 
+  override fun setBackgroundColor(color: Int) {
+    super.setBackgroundColor(color)
+//    tabLayout.setBackgroundColor(color)
+  }
+
   fun setTranslucent(translucent: Boolean) {
     // No direct equivalent on Android; could adjust alpha
   }
