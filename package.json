@@ -112,7 +112,7 @@
   "codegenConfig": {
     "name": "TrueTabsViewSpec",
     "type": "all",
-    "jsSrcsDir": "src",
+    "jsSrcsDir": "src/fabric",
     "android": {
       "javaPackageName": "com.truetabs"
     },

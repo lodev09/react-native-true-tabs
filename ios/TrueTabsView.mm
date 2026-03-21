@@ -3,6 +3,7 @@
 #import <React/RCTConversions.h>
 
 #import <react/renderer/components/TrueTabsViewSpec/ComponentDescriptors.h>
+#import <react/renderer/components/TrueTabsViewSpec/EventEmitters.h>
 #import <react/renderer/components/TrueTabsViewSpec/Props.h>
 #import <react/renderer/components/TrueTabsViewSpec/RCTComponentViewHelpers.h>
 
@@ -10,13 +11,17 @@
 
 using namespace facebook::react;
 
+@interface TrueTabsView () <UITabBarDelegate, RCTTrueTabsViewViewProtocol>
+@end
+
 @implementation TrueTabsView {
-    UIView * _view;
+  UITabBar *_tabBar;
+  NSInteger _selectedIndex;
 }
 
 + (ComponentDescriptorProvider)componentDescriptorProvider
 {
-    return concreteComponentDescriptorProvider<TrueTabsViewComponentDescriptor>();
+  return concreteComponentDescriptorProvider<TrueTabsViewComponentDescriptor>();
 }
 
 - (instancetype)initWithFrame:(CGRect)frame
@@ -24,25 +29,72 @@ using namespace facebook::react;
   if (self = [super initWithFrame:frame]) {
     static const auto defaultProps = std::make_shared<const TrueTabsViewProps>();
     _props = defaultProps;
+    _selectedIndex = 0;
 
-    _view = [[UIView alloc] init];
+    _tabBar = [[UITabBar alloc] initWithFrame:self.bounds];
+    _tabBar.delegate = self;
+    _tabBar.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
 
-    self.contentView = _view;
+    self.contentView = _tabBar;
   }
-
   return self;
 }
 
 - (void)updateProps:(Props::Shared const &)props oldProps:(Props::Shared const &)oldProps
 {
-    const auto &oldViewProps = *std::static_pointer_cast<TrueTabsViewProps const>(_props);
-    const auto &newViewProps = *std::static_pointer_cast<TrueTabsViewProps const>(props);
+  const auto &oldViewProps = *std::static_pointer_cast<TrueTabsViewProps const>(_props);
+  const auto &newViewProps = *std::static_pointer_cast<TrueTabsViewProps const>(props);
 
-    if (oldViewProps.color != newViewProps.color) {
-        [_view setBackgroundColor: RCTUIColorFromSharedColor(newViewProps.color)];
+  {
+    NSMutableArray<UITabBarItem *> *tabItems = [NSMutableArray new];
+    for (const auto &item : newViewProps.items) {
+      NSString *title = [NSString stringWithUTF8String:item.title.c_str()];
+
+      UIImage *image = nil;
+      if (!item.sfSymbol.empty()) {
+        NSString *symbolName = [NSString stringWithUTF8String:item.sfSymbol.c_str()];
+        image = [UIImage systemImageNamed:symbolName];
+      }
+
+      UITabBarItem *tabItem = [[UITabBarItem alloc] initWithTitle:title image:image tag:(NSInteger)tabItems.count];
+
+      if (!item.badge.empty()) {
+        NSString *badge = [NSString stringWithUTF8String:item.badge.c_str()];
+        tabItem.badgeValue = badge;
+      }
+
+      [tabItems addObject:tabItem];
     }
+    [_tabBar setItems:tabItems animated:NO];
+  }
 
-    [super updateProps:props oldProps:oldProps];
+  if (oldViewProps.selectedIndex != newViewProps.selectedIndex) {
+    _selectedIndex = newViewProps.selectedIndex;
+    if (_selectedIndex >= 0 && _selectedIndex < (NSInteger)_tabBar.items.count) {
+      _tabBar.selectedItem = _tabBar.items[_selectedIndex];
+    }
+  }
+
+  if (oldViewProps.translucent != newViewProps.translucent) {
+    _tabBar.translucent = newViewProps.translucent;
+  }
+
+  [super updateProps:props oldProps:oldProps];
+}
+
+#pragma mark - UITabBarDelegate
+
+- (void)tabBar:(UITabBar *)tabBar didSelectItem:(UITabBarItem *)item
+{
+  NSInteger index = item.tag;
+  if (index == _selectedIndex) {
+    return;
+  }
+
+  _selectedIndex = index;
+
+  const auto &eventEmitter = static_cast<const TrueTabsViewEventEmitter &>(*_eventEmitter);
+  eventEmitter.onTabSelect({.index = static_cast<int>(index)});
 }
 
 @end
