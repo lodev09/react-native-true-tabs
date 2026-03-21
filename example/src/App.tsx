@@ -1,20 +1,15 @@
 import { useRef } from 'react';
 import { View, Text, StyleSheet, FlatList } from 'react-native';
-import {
-  TrueTabsProvider,
-  TrueTabs,
-  TrueTabScreen,
-  type TabConfig,
-} from 'react-native-true-tabs';
+import { createTrueTabs } from 'react-native-true-tabs';
 import { TrueSheet } from '@lodev09/react-native-true-sheet';
 
 type TabName = 'home' | 'search' | 'settings';
 
-const tabs: TabConfig<TabName>[] = [
+const Tabs = createTrueTabs<TabName>([
   { name: 'home', title: 'Home', icon: { sfSymbol: 'house.fill' } },
   { name: 'search', title: 'Search', icon: { sfSymbol: 'magnifyingglass' } },
   { name: 'settings', title: 'Settings', icon: { sfSymbol: 'gearshape.fill' } },
-];
+]);
 
 const HOME_ITEMS = Array.from({ length: 50 }, (_, i) => ({
   id: String(i),
@@ -53,14 +48,14 @@ function SettingsScreen() {
 }
 
 function SheetFooter() {
-  return <TrueTabs tabs={tabs} style={styles.tabBar} />;
+  return <Tabs.Bar style={styles.tabBar} />;
 }
 
 export default function App() {
   const sheetRef = useRef<TrueSheet>(null);
 
   return (
-    <TrueTabsProvider tabs={tabs}>
+    <Tabs.Provider>
       <View style={styles.container}>
         <TrueSheet
           ref={sheetRef}
@@ -72,18 +67,18 @@ export default function App() {
           scrollable
           scrollableOptions={{ bottomScrollEdgeEffect: 'automatic' }}
         >
-          <TrueTabScreen name="home">
+          <Tabs.Screen name="home">
             <HomeScreen />
-          </TrueTabScreen>
-          <TrueTabScreen name="search">
+          </Tabs.Screen>
+          <Tabs.Screen name="search">
             <SearchScreen />
-          </TrueTabScreen>
-          <TrueTabScreen name="settings">
+          </Tabs.Screen>
+          <Tabs.Screen name="settings">
             <SettingsScreen />
-          </TrueTabScreen>
+          </Tabs.Screen>
         </TrueSheet>
       </View>
-    </TrueTabsProvider>
+    </Tabs.Provider>
   );
 }
 
