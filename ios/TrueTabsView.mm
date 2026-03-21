@@ -66,9 +66,7 @@ using namespace facebook::react;
       [tabItems addObject:tabItem];
     }
     [_tabBar setItems:tabItems animated:NO];
-  }
 
-  if (oldViewProps.selectedIndex != newViewProps.selectedIndex) {
     _selectedIndex = newViewProps.selectedIndex;
     if (_selectedIndex >= 0 && _selectedIndex < (NSInteger)_tabBar.items.count) {
       _tabBar.selectedItem = _tabBar.items[_selectedIndex];
@@ -77,6 +75,22 @@ using namespace facebook::react;
 
   if (oldViewProps.translucent != newViewProps.translucent) {
     _tabBar.translucent = newViewProps.translucent;
+  }
+
+  if (oldViewProps.tintColor != newViewProps.tintColor) {
+    if (newViewProps.tintColor) {
+      _tabBar.barTintColor = RCTUIColorFromSharedColor(*newViewProps.tintColor);
+    } else {
+      _tabBar.barTintColor = nil;
+    }
+  }
+
+  if (oldViewProps.activeTintColor != newViewProps.activeTintColor) {
+    if (newViewProps.activeTintColor) {
+      _tabBar.tintColor = RCTUIColorFromSharedColor(*newViewProps.activeTintColor);
+    } else {
+      _tabBar.tintColor = nil;
+    }
   }
 
   [super updateProps:props oldProps:oldProps];

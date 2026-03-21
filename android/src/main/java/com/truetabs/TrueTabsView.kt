@@ -3,6 +3,7 @@ package com.truetabs
 import android.content.Context
 import android.graphics.BitmapFactory
 import android.graphics.drawable.BitmapDrawable
+import android.view.ContextThemeWrapper
 import android.widget.FrameLayout
 import com.facebook.react.bridge.ReactContext
 import com.facebook.react.bridge.WritableNativeMap
@@ -11,7 +12,8 @@ import com.google.android.material.tabs.TabLayout
 import java.net.URL
 
 class TrueTabsView(context: Context) : FrameLayout(context) {
-  private val tabLayout: TabLayout = TabLayout(context)
+  private val materialContext: Context = ContextThemeWrapper(context, com.google.android.material.R.style.Theme_MaterialComponents)
+  private val tabLayout: TabLayout = TabLayout(materialContext)
   private var selectedIndex: Int = 0
 
   init {
@@ -70,9 +72,17 @@ class TrueTabsView(context: Context) : FrameLayout(context) {
     }
   }
 
-  override fun setBackgroundColor(color: Int) {
-    super.setBackgroundColor(color)
-//    tabLayout.setBackgroundColor(color)
+  fun setTintColor(color: Int?) {
+    if (color != null) {
+      tabLayout.backgroundTintList = android.content.res.ColorStateList.valueOf(color)
+    }
+  }
+
+  fun setActiveTintColor(color: Int?) {
+    if (color != null) {
+      tabLayout.setSelectedTabIndicatorColor(color)
+      tabLayout.setTabTextColors(tabLayout.tabTextColors?.defaultColor ?: 0, color)
+    }
   }
 
   fun setTranslucent(translucent: Boolean) {

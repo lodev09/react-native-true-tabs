@@ -1,5 +1,5 @@
 import { codegenNativeComponent } from 'react-native';
-import type { ViewProps } from 'react-native';
+import type { ColorValue, ViewProps } from 'react-native';
 import type {
   DirectEventHandler,
   Int32,
@@ -18,6 +18,8 @@ export interface NativeProps extends ViewProps {
   selectedIndex?: Int32;
   onTabSelect?: DirectEventHandler<Readonly<{ index: Int32 }>>;
   translucent?: boolean;
+  tintColor?: ColorValue;
+  activeTintColor?: ColorValue;
 }
 
 export default codegenNativeComponent<NativeProps>('TrueTabsView');

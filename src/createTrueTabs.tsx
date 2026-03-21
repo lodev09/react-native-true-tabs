@@ -31,6 +31,8 @@ interface ProviderProps<T extends string> extends PropsWithChildren {
 
 interface BarProps extends ViewProps {
   translucent?: boolean;
+  tintColor?: string;
+  activeTintColor?: string;
 }
 
 interface ScreenProps<T extends string> extends PropsWithChildren {
@@ -71,7 +73,7 @@ export const createTrueTabs = <const T extends string>(
   };
 
   const Bar = (props: BarProps) => {
-    const { translucent, ...rest } = props;
+    const { translucent, tintColor, activeTintColor, ...rest } = props;
     const { selectedTab, setSelectedTab } = useTabsContext();
 
     const selectedIndex = useMemo(
@@ -107,6 +109,8 @@ export const createTrueTabs = <const T extends string>(
         selectedIndex={selectedIndex}
         onTabSelect={handleTabSelect}
         translucent={translucent}
+        tintColor={tintColor}
+        activeTintColor={activeTintColor}
       />
     );
   };
