@@ -42,11 +42,11 @@ const colors = {
   },
 };
 
-const TAB_BAR_HEIGHT = 80;
+const TAB_BAR_HEIGHT = 90;
 
 function useTheme() {
-  const scheme = useColorScheme() ?? 'light';
-  return colors[scheme];
+  const scheme = useColorScheme();
+  return colors[scheme === 'dark' ? 'dark' : 'light'];
 }
 
 const CONVERSATIONS = [

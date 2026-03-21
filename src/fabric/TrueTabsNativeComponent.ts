@@ -9,6 +9,7 @@ import type {
 type TabItem = Readonly<{
   title: string;
   sfSymbol?: string;
+  iconUri?: string;
   badge?: string;
 }>;
 

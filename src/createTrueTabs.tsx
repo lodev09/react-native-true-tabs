@@ -6,9 +6,24 @@ import {
   useState,
   type PropsWithChildren,
 } from 'react';
-import type { ViewProps } from 'react-native';
+import { Image, type ViewProps } from 'react-native';
 import NativeTrueTabsView from './fabric/TrueTabsNativeComponent';
 import type { TabConfig } from './types';
+
+function resolveIconUri(icon?: TabConfig['icon']): string | undefined {
+  const source = icon?.source;
+  if (!source) return undefined;
+
+  if (typeof source === 'number') {
+    return Image.resolveAssetSource(source)?.uri;
+  }
+
+  if (typeof source === 'object' && !Array.isArray(source) && 'uri' in source) {
+    return source.uri ?? undefined;
+  }
+
+  return undefined;
+}
 
 interface ProviderProps<T extends string> extends PropsWithChildren {
   initialTab?: T;
@@ -69,6 +84,7 @@ export const createTrueTabs = <const T extends string>(
         tabs.map((tab) => ({
           title: tab.title,
           sfSymbol: tab.icon?.sfSymbol,
+          iconUri: resolveIconUri(tab.icon),
           badge: tab.badge,
         })),
       []

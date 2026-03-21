@@ -1,11 +1,14 @@
 package com.truetabs
 
 import android.content.Context
+import android.graphics.BitmapFactory
+import android.graphics.drawable.BitmapDrawable
 import android.widget.FrameLayout
 import com.facebook.react.bridge.ReactContext
 import com.facebook.react.bridge.WritableNativeMap
 import com.facebook.react.uimanager.UIManagerHelper
 import com.google.android.material.tabs.TabLayout
+import java.net.URL
 
 class TrueTabsView(context: Context) : FrameLayout(context) {
   private val tabLayout: TabLayout = TabLayout(context)
@@ -36,12 +39,25 @@ class TrueTabsView(context: Context) : FrameLayout(context) {
     tabLayout.removeAllTabs()
     for (item in items) {
       val tab = tabLayout.newTab().setText(item.title)
+      if (item.iconUri != null) {
+        try {
+          val bitmap = if (item.iconUri.startsWith("file://") || item.iconUri.startsWith("/")) {
+            val path = item.iconUri.removePrefix("file://")
+            BitmapFactory.decodeFile(path)
+          } else {
+            val stream = URL(item.iconUri).openStream()
+            BitmapFactory.decodeStream(stream)
+          }
+          if (bitmap != null) {
+            tab.icon = BitmapDrawable(context.resources, bitmap)
+          }
+        } catch (_: Exception) {}
+      }
       if (item.badge != null) {
         tab.orCreateBadge.number = item.badge.toIntOrNull() ?: 0
       }
       tabLayout.addTab(tab, false)
     }
-    // Restore selection
     if (selectedIndex in 0 until tabLayout.tabCount) {
       tabLayout.getTabAt(selectedIndex)?.select()
     }
@@ -67,5 +83,6 @@ class TrueTabsView(context: Context) : FrameLayout(context) {
 data class TabItemData(
   val title: String,
   val sfSymbol: String? = null,
+  val iconUri: String? = null,
   val badge: String? = null,
 )

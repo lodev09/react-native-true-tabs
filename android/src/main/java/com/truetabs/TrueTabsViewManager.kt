@@ -31,6 +31,7 @@ class TrueTabsViewManager : SimpleViewManager<TrueTabsView>(),
         TabItemData(
           title = map.getString("title") ?: "",
           sfSymbol = if (map.hasKey("sfSymbol")) map.getString("sfSymbol") else null,
+          iconUri = if (map.hasKey("iconUri")) map.getString("iconUri") else null,
           badge = if (map.hasKey("badge")) map.getString("badge") else null,
         )
       )
