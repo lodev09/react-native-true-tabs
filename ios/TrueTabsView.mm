@@ -101,9 +101,6 @@ static NSCache<NSString *, UIImage *> *_imageCache;
 - (void)finalizeUpdates:(RNComponentViewUpdateMask)updateMask {
   [super finalizeUpdates:updateMask];
 
-  NSLog(@"[TrueTabsView] finalizeUpdates mask: %lu, needsRebuild: %d",
-        (unsigned long)updateMask, _needsTabItemsUpdate);
-
   if (!(updateMask & RNComponentViewUpdateMaskProps))
     return;
 
