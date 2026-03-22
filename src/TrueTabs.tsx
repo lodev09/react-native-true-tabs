@@ -28,14 +28,24 @@ export class TrueTabs<T extends string = string> extends Component<
   TrueTabsProps<T>
 > {
   private readonly nativeRef = createRef<typeof NativeTrueTabsView>();
+  private cachedItems: ReturnType<TrueTabs<T>['buildItems']> | undefined;
+  private prevTabs: TabConfig<T>[] | undefined;
 
-  private getItems() {
+  private buildItems() {
     return this.props.tabs.map((tab) => ({
       title: tab.title,
       sfSymbol: tab.icon?.sfSymbol,
       iconUri: resolveIconUri(tab.icon),
       badge: tab.badge,
     }));
+  }
+
+  private getItems() {
+    if (this.props.tabs !== this.prevTabs) {
+      this.prevTabs = this.props.tabs;
+      this.cachedItems = this.buildItems();
+    }
+    return this.cachedItems!;
   }
 
   private handleTabSelect = (event: { nativeEvent: { index: number } }) => {

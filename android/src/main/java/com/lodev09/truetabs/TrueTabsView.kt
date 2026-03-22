@@ -1,20 +1,33 @@
 package com.lodev09.truetabs
 
 import android.content.Context
+import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.drawable.BitmapDrawable
+import android.os.Handler
+import android.os.Looper
+import android.util.Log
+import android.util.LruCache
 import android.view.ContextThemeWrapper
 import android.widget.FrameLayout
 import com.facebook.react.bridge.ReactContext
-import com.facebook.react.bridge.WritableNativeMap
 import com.facebook.react.uimanager.UIManagerHelper
 import com.google.android.material.tabs.TabLayout
 import java.net.URL
+import java.util.concurrent.Executors
 
 class TrueTabsView(context: Context) : FrameLayout(context) {
   private val materialContext: Context = ContextThemeWrapper(context, com.google.android.material.R.style.Theme_MaterialComponents)
   private val tabLayout: TabLayout = TabLayout(materialContext)
   private var selectedIndex: Int = 0
+
+  companion object {
+    private const val TAG = "TrueTabsView"
+    private val imageCache = LruCache<String, Bitmap>(50)
+    private val executor = Executors.newFixedThreadPool(2)
+  }
+
+  private val mainHandler = Handler(Looper.getMainLooper())
 
   init {
     tabLayout.layoutParams = LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT)
@@ -45,19 +58,37 @@ class TrueTabsView(context: Context) : FrameLayout(context) {
     for (item in items) {
       val tab = tabLayout.newTab().setText(item.title)
       if (item.iconUri != null) {
-        try {
-          val bitmap =
-            if (item.iconUri.startsWith("file://") || item.iconUri.startsWith("/")) {
-              val path = item.iconUri.removePrefix("file://")
-              BitmapFactory.decodeFile(path)
-            } else {
-              val stream = URL(item.iconUri).openStream()
-              BitmapFactory.decodeStream(stream)
+        val cached = imageCache.get(item.iconUri)
+        if (cached != null) {
+          tab.icon = BitmapDrawable(context.resources, cached)
+        } else if (item.iconUri.startsWith("file://") || item.iconUri.startsWith("/")) {
+          try {
+            val path = item.iconUri.removePrefix("file://")
+            val bitmap = BitmapFactory.decodeFile(path)
+            if (bitmap != null) {
+              imageCache.put(item.iconUri, bitmap)
+              tab.icon = BitmapDrawable(context.resources, bitmap)
             }
-          if (bitmap != null) {
-            tab.icon = BitmapDrawable(context.resources, bitmap)
+          } catch (e: Exception) {
+            Log.w(TAG, "Failed to load icon: ${item.iconUri}", e)
           }
-        } catch (_: Exception) {
+        } else {
+          val uri = item.iconUri
+          executor.execute {
+            try {
+              val bitmap = URL(uri).openStream().use { stream ->
+                BitmapFactory.decodeStream(stream)
+              }
+              if (bitmap != null) {
+                imageCache.put(uri, bitmap)
+                mainHandler.post {
+                  tab.icon = BitmapDrawable(context.resources, bitmap)
+                }
+              }
+            } catch (e: Exception) {
+              Log.w(TAG, "Failed to load icon: $uri", e)
+            }
+          }
         }
       }
       if (item.badge != null) {
@@ -80,8 +111,7 @@ class TrueTabsView(context: Context) : FrameLayout(context) {
   fun setTintColor(color: Int?) {
     if (color != null) {
       tabLayout.backgroundTintList =
-        android.content.res.ColorStateList
-          .valueOf(color)
+        android.content.res.ColorStateList.valueOf(color)
     }
   }
 

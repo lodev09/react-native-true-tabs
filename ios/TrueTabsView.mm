@@ -11,16 +11,26 @@
 
 using namespace facebook::react;
 
+static NSCache<NSString *, UIImage *> *_imageCache;
+
 @interface TrueTabsView () <UITabBarDelegate, RCTTrueTabsViewViewProtocol>
 @end
 
 @implementation TrueTabsView {
   UITabBar *_tabBar;
   NSInteger _selectedIndex;
+  BOOL _needsTabItemsUpdate;
 }
 
 + (ComponentDescriptorProvider)componentDescriptorProvider {
   return concreteComponentDescriptorProvider<TrueTabsViewComponentDescriptor>();
+}
+
++ (void)initialize {
+  if (self == [TrueTabsView class]) {
+    _imageCache = [NSCache new];
+    _imageCache.countLimit = 50;
+  }
 }
 
 - (instancetype)initWithFrame:(CGRect)frame {
@@ -47,52 +57,24 @@ using namespace facebook::react;
   const auto &newViewProps =
       *std::static_pointer_cast<TrueTabsViewProps const>(props);
 
-  {
-    NSMutableArray<UITabBarItem *> *tabItems = [NSMutableArray new];
-    for (const auto &item : newViewProps.items) {
-      NSString *title = [NSString stringWithUTF8String:item.title.c_str()];
-
-      UIImage *image = nil;
-      if (!item.sfSymbol.empty()) {
-        NSString *symbolName =
-            [NSString stringWithUTF8String:item.sfSymbol.c_str()];
-        image = [UIImage systemImageNamed:symbolName];
-      } else if (!item.iconUri.empty()) {
-        NSString *uri = [NSString stringWithUTF8String:item.iconUri.c_str()];
-        if ([uri hasPrefix:@"file://"] || [uri hasPrefix:@"/"]) {
-          NSString *path =
-              [uri hasPrefix:@"file://"] ? [uri substringFromIndex:7] : uri;
-          image = [UIImage imageWithContentsOfFile:path];
-        } else {
-          NSURL *url = [NSURL URLWithString:uri];
-          if (url) {
-            NSData *data = [NSData dataWithContentsOfURL:url];
-            if (data) {
-              image = [UIImage imageWithData:data];
-            }
-          }
-        }
+  if (oldViewProps.items.size() != newViewProps.items.size()) {
+    _needsTabItemsUpdate = YES;
+  } else {
+    for (size_t i = 0; i < newViewProps.items.size(); i++) {
+      const auto &oldItem = oldViewProps.items[i];
+      const auto &newItem = newViewProps.items[i];
+      if (oldItem.title != newItem.title ||
+          oldItem.sfSymbol != newItem.sfSymbol ||
+          oldItem.iconUri != newItem.iconUri ||
+          oldItem.badge != newItem.badge) {
+        _needsTabItemsUpdate = YES;
+        break;
       }
-
-      UITabBarItem *tabItem =
-          [[UITabBarItem alloc] initWithTitle:title
-                                        image:image
-                                          tag:(NSInteger)tabItems.count];
-
-      if (!item.badge.empty()) {
-        NSString *badge = [NSString stringWithUTF8String:item.badge.c_str()];
-        tabItem.badgeValue = badge;
-      }
-
-      [tabItems addObject:tabItem];
     }
-    [_tabBar setItems:tabItems animated:NO];
+  }
 
+  if (oldViewProps.selectedIndex != newViewProps.selectedIndex) {
     _selectedIndex = newViewProps.selectedIndex;
-    if (_selectedIndex >= 0 &&
-        _selectedIndex < (NSInteger)_tabBar.items.count) {
-      _tabBar.selectedItem = _tabBar.items[_selectedIndex];
-    }
   }
 
   if (oldViewProps.translucent != newViewProps.translucent) {
@@ -100,23 +82,101 @@ using namespace facebook::react;
   }
 
   if (oldViewProps.tintColor != newViewProps.tintColor) {
-    if (newViewProps.tintColor) {
-      _tabBar.barTintColor = RCTUIColorFromSharedColor(*newViewProps.tintColor);
-    } else {
-      _tabBar.barTintColor = nil;
-    }
+    _tabBar.barTintColor = newViewProps.tintColor
+        ? RCTUIColorFromSharedColor(*newViewProps.tintColor)
+        : nil;
   }
 
   if (oldViewProps.activeTintColor != newViewProps.activeTintColor) {
-    if (newViewProps.activeTintColor) {
-      _tabBar.tintColor =
-          RCTUIColorFromSharedColor(*newViewProps.activeTintColor);
-    } else {
-      _tabBar.tintColor = nil;
-    }
+    _tabBar.tintColor = newViewProps.activeTintColor
+        ? RCTUIColorFromSharedColor(*newViewProps.activeTintColor)
+        : nil;
   }
 
   [super updateProps:props oldProps:oldProps];
+}
+
+- (void)finalizeUpdates:(RNComponentViewUpdateMask)updateMask {
+  [super finalizeUpdates:updateMask];
+
+  NSLog(@"[TrueTabsView] finalizeUpdates mask: %lu, needsRebuild: %d", (unsigned long)updateMask, _needsTabItemsUpdate);
+
+  if (!(updateMask & RNComponentViewUpdateMaskProps)) return;
+
+  if (_needsTabItemsUpdate) {
+    _needsTabItemsUpdate = NO;
+    [self _rebuildTabItems];
+  }
+
+  if (_selectedIndex >= 0 &&
+      _selectedIndex < (NSInteger)_tabBar.items.count) {
+    _tabBar.selectedItem = _tabBar.items[_selectedIndex];
+  }
+}
+
+- (void)_rebuildTabItems {
+  const auto &viewProps =
+      *std::static_pointer_cast<TrueTabsViewProps const>(_props);
+
+  NSMutableArray<UITabBarItem *> *tabItems = [NSMutableArray new];
+  for (const auto &item : viewProps.items) {
+    NSString *title = [NSString stringWithUTF8String:item.title.c_str()];
+
+    UIImage *image = nil;
+    NSString *remoteUri = nil;
+
+    if (!item.sfSymbol.empty()) {
+      NSString *symbolName =
+          [NSString stringWithUTF8String:item.sfSymbol.c_str()];
+      image = [UIImage systemImageNamed:symbolName];
+    } else if (!item.iconUri.empty()) {
+      NSString *uri = [NSString stringWithUTF8String:item.iconUri.c_str()];
+      UIImage *cached = [_imageCache objectForKey:uri];
+      if (cached) {
+        image = cached;
+      } else if ([uri hasPrefix:@"file://"] || [uri hasPrefix:@"/"]) {
+        NSString *path =
+            [uri hasPrefix:@"file://"] ? [uri substringFromIndex:7] : uri;
+        image = [UIImage imageWithContentsOfFile:path];
+        if (image) {
+          image = [image imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+          [_imageCache setObject:image forKey:uri];
+        }
+      } else {
+        remoteUri = uri;
+      }
+    }
+
+    UITabBarItem *tabItem =
+        [[UITabBarItem alloc] initWithTitle:title
+                                      image:image
+                                        tag:(NSInteger)tabItems.count];
+
+    if (!item.badge.empty()) {
+      NSString *badge = [NSString stringWithUTF8String:item.badge.c_str()];
+      tabItem.badgeValue = badge;
+    }
+
+    if (remoteUri) {
+      NSString *uri = remoteUri;
+      dispatch_async(dispatch_get_global_queue(QOS_CLASS_USER_INITIATED, 0), ^{
+        NSURL *url = [NSURL URLWithString:uri];
+        if (!url) return;
+        NSData *data = [NSData dataWithContentsOfURL:url];
+        if (!data) return;
+        UIImage *img = [UIImage imageWithData:data];
+        if (!img) return;
+        img = [img imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+        [_imageCache setObject:img forKey:uri];
+        dispatch_async(dispatch_get_main_queue(), ^{
+          tabItem.image = img;
+        });
+      });
+    }
+
+    [tabItems addObject:tabItem];
+  }
+  [_tabBar setItems:tabItems animated:NO];
 }
 
 #pragma mark - UITabBarDelegate
