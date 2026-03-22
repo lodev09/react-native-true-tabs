@@ -1,5 +1,5 @@
 {
-  "name": "react-native-true-tabs",
+  "name": "@lodev09/react-native-true-tabs",
   "version": "0.1.0",
   "description": "Decoupled native tab bars for React Native",
   "main": "./lib/module/index.js",
@@ -32,7 +32,7 @@
     "!**/.*"
   ],
   "scripts": {
-    "example": "yarn workspace react-native-true-tabs-example",
+    "example": "yarn workspace @lodev09/react-native-true-tabs-example",
     "clean": "del-cli android/build example/android/build example/android/app/build example/ios/build lib",
     "prepare": "bob build",
     "typecheck": "tsc",
@@ -120,7 +120,7 @@
     "type": "all",
     "jsSrcsDir": "src/fabric",
     "android": {
-      "javaPackageName": "com.truetabs"
+      "javaPackageName": "com.lodev09.truetabs"
     },
     "ios": {
       "components": {

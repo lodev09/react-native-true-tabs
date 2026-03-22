@@ -1,6 +1,6 @@
 import { useRef } from 'react';
 import { View, Text, StyleSheet, Platform } from 'react-native';
-import { createTrueTabs } from 'react-native-true-tabs';
+import { createTrueTabs } from '@lodev09/react-native-true-tabs';
 import { TrueSheet } from '@lodev09/react-native-true-sheet';
 import { useTheme } from './theme';
 import { HomeScreen } from './screens/HomeScreen';

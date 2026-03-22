@@ -33,7 +33,7 @@ apply plugin: "kotlin-android"
 apply plugin: "com.facebook.react"
 
 android {
-  namespace "com.truetabs"
+  namespace "com.lodev09.truetabs"
 
   compileSdkVersion getExtOrDefault("compileSdkVersion")
 

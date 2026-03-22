@@ -1,4 +1,4 @@
-package com.truetabs
+package com.lodev09.truetabs
 
 import com.facebook.react.BaseReactPackage
 import com.facebook.react.bridge.NativeModule

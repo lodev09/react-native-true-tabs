@@ -1,4 +1,4 @@
-package com.truetabs
+package com.lodev09.truetabs
 
 import android.content.Context
 import android.graphics.BitmapFactory
