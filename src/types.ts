@@ -7,7 +7,7 @@ export interface TabIcon {
    */
   sfSymbol?: string;
   /**
-   * Image source (Android).
+   * Image source. Used as fallback when `sfSymbol` is not set (iOS) or as the primary icon (Android).
    */
   source?: ImageSourcePropType;
 }

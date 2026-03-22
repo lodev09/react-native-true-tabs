@@ -60,7 +60,7 @@ Factory that returns `{ Provider, Bar, Screen, useTabs }`.
 | Prop | Type | Description |
 |------|------|-------------|
 | `sfSymbol` | `string` | SF Symbol name (iOS) |
-| `source` | `ImageSourcePropType` | Image source (Android) |
+| `source` | `ImageSourcePropType` | Image source. Fallback when `sfSymbol` is not set on iOS, primary icon on Android. |
 
 ### `Provider`
 

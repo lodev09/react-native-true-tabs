@@ -57,6 +57,22 @@ using namespace facebook::react;
         NSString *symbolName =
             [NSString stringWithUTF8String:item.sfSymbol.c_str()];
         image = [UIImage systemImageNamed:symbolName];
+      } else if (!item.iconUri.empty()) {
+        NSString *uri = [NSString stringWithUTF8String:item.iconUri.c_str()];
+        if ([uri hasPrefix:@"file://"] || [uri hasPrefix:@"/"]) {
+          NSString *path = [uri hasPrefix:@"file://"]
+              ? [uri substringFromIndex:7]
+              : uri;
+          image = [UIImage imageWithContentsOfFile:path];
+        } else {
+          NSURL *url = [NSURL URLWithString:uri];
+          if (url) {
+            NSData *data = [NSData dataWithContentsOfURL:url];
+            if (data) {
+              image = [UIImage imageWithData:data];
+            }
+          }
+        }
       }
 
       UITabBarItem *tabItem =
