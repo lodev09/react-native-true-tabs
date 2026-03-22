@@ -16,20 +16,20 @@ export default function App() {
   const c = useTheme();
 
   return (
-    <Tabs.Provider ref={tabsRef}>
-      <View style={[styles.container, { backgroundColor: c.landing }]}>
-        <View style={styles.landing}>
-          <Text style={[styles.landingTitle, { color: c.landingText }]}>
-            TrueTabs
-          </Text>
-          <Text style={[styles.landingSubtitle, { color: c.landingText }]}>
-            Native tabs, powered by a sheet
-          </Text>
-          <Button
-            label="Go to Settings"
-            onPress={() => tabsRef.current?.setSelectedTab('settings')}
-          />
-        </View>
+    <View style={[styles.container, { backgroundColor: c.landing }]}>
+      <View style={styles.landing}>
+        <Text style={[styles.landingTitle, { color: c.landingText }]}>
+          TrueTabs
+        </Text>
+        <Text style={[styles.landingSubtitle, { color: c.landingText }]}>
+          Native tabs, powered by a sheet
+        </Text>
+        <Button
+          label="Go to Settings"
+          onPress={() => tabsRef.current?.setSelectedTab('settings')}
+        />
+      </View>
+      <Tabs.Provider ref={tabsRef}>
         <TrueSheet
           ref={sheetRef}
           detents={[0.5, 1]}
@@ -52,8 +52,8 @@ export default function App() {
             <SettingsScreen />
           </Tabs.Screen>
         </TrueSheet>
-      </View>
-    </Tabs.Provider>
+      </Tabs.Provider>
+    </View>
   );
 }
 

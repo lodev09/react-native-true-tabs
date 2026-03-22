@@ -1,9 +1,6 @@
 import type { PropsWithChildren } from 'react';
 import type { ImageSourcePropType, ViewProps } from 'react-native';
 
-/**
- * Icon configuration for a tab.
- */
 export interface TabIcon {
   /**
    * SF Symbol name (iOS).
@@ -15,9 +12,6 @@ export interface TabIcon {
   source?: ImageSourcePropType;
 }
 
-/**
- * Configuration for a single tab.
- */
 export interface TabConfig<T extends string = string> {
   /**
    * Unique tab identifier.
@@ -37,9 +31,6 @@ export interface TabConfig<T extends string = string> {
   badge?: string;
 }
 
-/**
- * Imperative handle exposed by `Provider` via `ref`.
- */
 export interface TrueTabsRef<T extends string = string> {
   /**
    * Currently selected tab name.
@@ -51,9 +42,6 @@ export interface TrueTabsRef<T extends string = string> {
   setSelectedTab: (tab: T) => void;
 }
 
-/**
- * Props for the native tab bar component.
- */
 export interface BarProps extends ViewProps {
   /**
    * Makes the tab bar translucent (iOS only).
@@ -69,9 +57,6 @@ export interface BarProps extends ViewProps {
   activeTintColor?: string;
 }
 
-/**
- * Props for a tab screen.
- */
 export interface ScreenProps<T extends string> extends PropsWithChildren {
   /**
    * Tab name this screen is associated with.
@@ -79,9 +64,6 @@ export interface ScreenProps<T extends string> extends PropsWithChildren {
   name: T;
 }
 
-/**
- * Props for the tab provider.
- */
 export interface ProviderProps<T extends string> extends PropsWithChildren {
   /**
    * Tab to select on first render. Defaults to the first tab.

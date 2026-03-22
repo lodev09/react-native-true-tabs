@@ -3,7 +3,6 @@ import type { ColorValue, ViewProps } from 'react-native';
 import type {
   DirectEventHandler,
   Int32,
-  ReadonlyArray,
 } from 'react-native/Libraries/Types/CodegenTypes';
 
 type TabItem = Readonly<{
