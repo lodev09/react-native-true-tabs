@@ -4,7 +4,6 @@ import { type TrueTabsRef } from '@lodev09/react-native-true-tabs';
 import { TrueSheet } from '@lodev09/react-native-true-sheet';
 import { useTheme } from './theme';
 import { Tabs, type TabName } from './tabs';
-import { SheetFooter } from './components/SheetFooter';
 import { Button } from './components/Button';
 import { HomeScreen } from './screens/HomeScreen';
 import { SearchScreen } from './screens/SearchScreen';
@@ -36,7 +35,18 @@ export default function App() {
           initialDetentIndex={0}
           dimmedDetentIndex={1}
           dismissible={false}
-          footer={<SheetFooter />}
+          footer={
+            <Tabs.Bar
+              style={[
+                styles.tabBar,
+                Platform.select({
+                  android: { backgroundColor: c.secondaryBackground },
+                }),
+              ]}
+              tintColor={Platform.select({ android: c.secondaryBackground })}
+              activeTintColor="#FF9500"
+            />
+          }
           backgroundColor={Platform.OS === 'android' ? c.background : undefined}
           grabber
           scrollable
@@ -74,5 +84,8 @@ const styles = StyleSheet.create({
   landingSubtitle: {
     fontSize: 17,
     marginTop: 8,
+  },
+  tabBar: {
+    height: 90,
   },
 });
