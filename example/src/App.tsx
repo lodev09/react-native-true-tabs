@@ -1,49 +1,22 @@
 import { useRef } from 'react';
 import { View, Text, StyleSheet, Platform } from 'react-native';
-import { createTrueTabs } from '@lodev09/react-native-true-tabs';
+import { type TrueTabsRef } from '@lodev09/react-native-true-tabs';
 import { TrueSheet } from '@lodev09/react-native-true-sheet';
 import { useTheme } from './theme';
+import { Tabs, type TabName } from './tabs';
+import { SheetFooter } from './components/SheetFooter';
+import { Button } from './components/Button';
 import { HomeScreen } from './screens/HomeScreen';
 import { SearchScreen } from './screens/SearchScreen';
 import { SettingsScreen } from './screens/SettingsScreen';
 
-type TabName = 'home' | 'search' | 'settings';
-
-const TAB_BAR_HEIGHT = 90;
-
-const Tabs = createTrueTabs<TabName>([
-  {
-    name: 'home',
-    title: 'Home',
-    icon: { sfSymbol: 'house.fill' },
-    badge: '100',
-  },
-  { name: 'search', title: 'Search', icon: { sfSymbol: 'magnifyingglass' } },
-  { name: 'settings', title: 'Settings', icon: { sfSymbol: 'gearshape.fill' } },
-]);
-
-function SheetFooter() {
-  const c = useTheme();
-  return (
-    <Tabs.Bar
-      style={[
-        styles.tabBar,
-        {
-          backgroundColor: Platform.select({ android: c.secondaryBackground }),
-        },
-      ]}
-      tintColor={Platform.select({ android: c.secondaryBackground })}
-      activeTintColor="#FF9500"
-    />
-  );
-}
-
 export default function App() {
   const sheetRef = useRef<TrueSheet>(null);
+  const tabsRef = useRef<TrueTabsRef<TabName>>(null);
   const c = useTheme();
 
   return (
-    <Tabs.Provider>
+    <Tabs.Provider ref={tabsRef}>
       <View style={[styles.container, { backgroundColor: c.landing }]}>
         <View style={styles.landing}>
           <Text style={[styles.landingTitle, { color: c.landingText }]}>
@@ -52,6 +25,10 @@ export default function App() {
           <Text style={[styles.landingSubtitle, { color: c.landingText }]}>
             Native tabs, powered by a sheet
           </Text>
+          <Button
+            label="Go to Settings"
+            onPress={() => tabsRef.current?.setSelectedTab('settings')}
+          />
         </View>
         <TrueSheet
           ref={sheetRef}
@@ -97,8 +74,5 @@ const styles = StyleSheet.create({
   landingSubtitle: {
     fontSize: 17,
     marginTop: 8,
-  },
-  tabBar: {
-    height: TAB_BAR_HEIGHT,
   },
 });

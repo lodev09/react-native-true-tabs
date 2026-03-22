@@ -5,7 +5,6 @@ import {
   useContext,
   useImperativeHandle,
   useMemo,
-  useRef,
   useState,
   type PropsWithChildren,
   type Ref,
@@ -29,22 +28,55 @@ function resolveIconUri(icon?: TabConfig['icon']): string | undefined {
   return undefined;
 }
 
+/**
+ * Imperative handle exposed by `Provider` via `ref`.
+ */
 export interface TrueTabsRef<T extends string = string> {
+  /**
+   * Currently selected tab name.
+   */
   selectedTab: T;
+  /**
+   * Programmatically switch to a tab.
+   */
   setSelectedTab: (tab: T) => void;
 }
 
+/**
+ * Props for the native tab bar component.
+ */
 interface BarProps extends ViewProps {
+  /**
+   * Makes the tab bar translucent (iOS only).
+   */
   translucent?: boolean;
+  /**
+   * Tab bar background color.
+   */
   tintColor?: string;
+  /**
+   * Selected tab tint color.
+   */
   activeTintColor?: string;
 }
 
+/**
+ * Props for a tab screen.
+ */
 interface ScreenProps<T extends string> extends PropsWithChildren {
+  /**
+   * Tab name this screen is associated with.
+   */
   name: T;
 }
 
+/**
+ * Props for the tab provider.
+ */
 interface ProviderProps<T extends string> extends PropsWithChildren {
+  /**
+   * Tab to select on first render. Defaults to the first tab.
+   */
   initialTab?: T;
 }
 
@@ -54,6 +86,15 @@ interface TrueTabsState<T extends string> {
   tabs: TabConfig<T>[];
 }
 
+/**
+ * Creates a set of tab components and hooks scoped to a specific tab configuration.
+ *
+ * @example
+ * const Tabs = createTrueTabs([
+ *   { name: 'home', title: 'Home', icon: { sfSymbol: 'house.fill' } },
+ *   { name: 'search', title: 'Search', icon: { sfSymbol: 'magnifyingglass' } },
+ * ]);
+ */
 export const createTrueTabs = <const T extends string>(
   tabs: TabConfig<T>[]
 ) => {
@@ -147,7 +188,5 @@ export const createTrueTabs = <const T extends string>(
     return { selectedTab, setSelectedTab };
   };
 
-  const useRef_ = () => useRef<TrueTabsRef<T>>(null);
-
-  return { Provider, Bar, Screen, useTabs, useRef: useRef_ };
+  return { Provider, Bar, Screen, useTabs };
 };

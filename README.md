@@ -44,7 +44,7 @@ export default function App() {
 
 ### `createTrueTabs<T>(tabs)`
 
-Factory that returns `{ Provider, Bar, Screen, useTabs, useRef }`.
+Factory that returns `{ Provider, Bar, Screen, useTabs }`.
 
 #### `TabConfig`
 
@@ -91,12 +91,15 @@ const { selectedTab, setSelectedTab } = Tabs.useTabs();
 setSelectedTab('settings');
 ```
 
-### `useRef()`
+### `TrueTabsRef`
 
-Returns a typed ref for the Provider. Use for imperative control outside the provider tree.
+Use for imperative control outside the provider tree.
 
 ```tsx
-const tabsRef = Tabs.useRef();
+import { useRef } from 'react';
+import { createTrueTabs, type TrueTabsRef } from '@lodev09/react-native-true-tabs';
+
+const tabsRef = useRef<TrueTabsRef<TabName>>(null);
 
 <Tabs.Provider ref={tabsRef}>...</Tabs.Provider>
 
