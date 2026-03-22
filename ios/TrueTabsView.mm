@@ -60,9 +60,8 @@ using namespace facebook::react;
       } else if (!item.iconUri.empty()) {
         NSString *uri = [NSString stringWithUTF8String:item.iconUri.c_str()];
         if ([uri hasPrefix:@"file://"] || [uri hasPrefix:@"/"]) {
-          NSString *path = [uri hasPrefix:@"file://"]
-              ? [uri substringFromIndex:7]
-              : uri;
+          NSString *path =
+              [uri hasPrefix:@"file://"] ? [uri substringFromIndex:7] : uri;
           image = [UIImage imageWithContentsOfFile:path];
         } else {
           NSURL *url = [NSURL URLWithString:uri];
