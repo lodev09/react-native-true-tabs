@@ -9,6 +9,7 @@ import android.os.Looper
 import android.util.Log
 import android.util.LruCache
 import android.view.ContextThemeWrapper
+import android.view.View.MeasureSpec
 import android.widget.FrameLayout
 import com.facebook.react.bridge.ReactContext
 import com.facebook.react.uimanager.UIManagerHelper
@@ -98,6 +99,17 @@ class TrueTabsView(context: Context) : FrameLayout(context) {
     }
     if (selectedIndex in 0 until tabLayout.tabCount) {
       tabLayout.getTabAt(selectedIndex)?.select()
+    }
+    remeasure()
+  }
+
+  private fun remeasure() {
+    tabLayout.post {
+      tabLayout.measure(
+        MeasureSpec.makeMeasureSpec(tabLayout.width, MeasureSpec.EXACTLY),
+        MeasureSpec.makeMeasureSpec(tabLayout.height, MeasureSpec.EXACTLY)
+      )
+      tabLayout.layout(tabLayout.left, tabLayout.top, tabLayout.right, tabLayout.bottom)
     }
   }
 
