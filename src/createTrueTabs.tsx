@@ -6,12 +6,18 @@ import {
   useImperativeHandle,
   useMemo,
   useState,
-  type PropsWithChildren,
   type Ref,
 } from 'react';
-import { Image, type ViewProps } from 'react-native';
+import { Image } from 'react-native';
 import NativeTrueTabsView from './fabric/TrueTabsNativeComponent';
-import type { TabConfig } from './types';
+import type {
+  BarProps,
+  ProviderProps,
+  ScreenProps,
+  TabConfig,
+  TrueTabsRef,
+  TrueTabsState,
+} from './types';
 
 function resolveIconUri(icon?: TabConfig['icon']): string | undefined {
   const source = icon?.source;
@@ -26,64 +32,6 @@ function resolveIconUri(icon?: TabConfig['icon']): string | undefined {
   }
 
   return undefined;
-}
-
-/**
- * Imperative handle exposed by `Provider` via `ref`.
- */
-export interface TrueTabsRef<T extends string = string> {
-  /**
-   * Currently selected tab name.
-   */
-  selectedTab: T;
-  /**
-   * Programmatically switch to a tab.
-   */
-  setSelectedTab: (tab: T) => void;
-}
-
-/**
- * Props for the native tab bar component.
- */
-interface BarProps extends ViewProps {
-  /**
-   * Makes the tab bar translucent (iOS only).
-   */
-  translucent?: boolean;
-  /**
-   * Tab bar background color.
-   */
-  tintColor?: string;
-  /**
-   * Selected tab tint color.
-   */
-  activeTintColor?: string;
-}
-
-/**
- * Props for a tab screen.
- */
-interface ScreenProps<T extends string> extends PropsWithChildren {
-  /**
-   * Tab name this screen is associated with.
-   */
-  name: T;
-}
-
-/**
- * Props for the tab provider.
- */
-interface ProviderProps<T extends string> extends PropsWithChildren {
-  /**
-   * Tab to select on first render. Defaults to the first tab.
-   */
-  initialTab?: T;
-}
-
-interface TrueTabsState<T extends string> {
-  selectedTab: T;
-  setSelectedTab: (tab: T) => void;
-  tabs: TabConfig<T>[];
 }
 
 /**
