@@ -82,15 +82,17 @@ static NSCache<NSString *, UIImage *> *_imageCache;
   }
 
   if (oldViewProps.tintColor != newViewProps.tintColor) {
-    _tabBar.barTintColor = newViewProps.tintColor
-        ? RCTUIColorFromSharedColor(*newViewProps.tintColor)
-        : nil;
+    _tabBar.barTintColor =
+        newViewProps.tintColor
+            ? RCTUIColorFromSharedColor(*newViewProps.tintColor)
+            : nil;
   }
 
   if (oldViewProps.activeTintColor != newViewProps.activeTintColor) {
-    _tabBar.tintColor = newViewProps.activeTintColor
-        ? RCTUIColorFromSharedColor(*newViewProps.activeTintColor)
-        : nil;
+    _tabBar.tintColor =
+        newViewProps.activeTintColor
+            ? RCTUIColorFromSharedColor(*newViewProps.activeTintColor)
+            : nil;
   }
 
   [super updateProps:props oldProps:oldProps];
@@ -99,17 +101,18 @@ static NSCache<NSString *, UIImage *> *_imageCache;
 - (void)finalizeUpdates:(RNComponentViewUpdateMask)updateMask {
   [super finalizeUpdates:updateMask];
 
-  NSLog(@"[TrueTabsView] finalizeUpdates mask: %lu, needsRebuild: %d", (unsigned long)updateMask, _needsTabItemsUpdate);
+  NSLog(@"[TrueTabsView] finalizeUpdates mask: %lu, needsRebuild: %d",
+        (unsigned long)updateMask, _needsTabItemsUpdate);
 
-  if (!(updateMask & RNComponentViewUpdateMaskProps)) return;
+  if (!(updateMask & RNComponentViewUpdateMaskProps))
+    return;
 
   if (_needsTabItemsUpdate) {
     _needsTabItemsUpdate = NO;
     [self _rebuildTabItems];
   }
 
-  if (_selectedIndex >= 0 &&
-      _selectedIndex < (NSInteger)_tabBar.items.count) {
+  if (_selectedIndex >= 0 && _selectedIndex < (NSInteger)_tabBar.items.count) {
     _tabBar.selectedItem = _tabBar.items[_selectedIndex];
   }
 }
@@ -139,7 +142,8 @@ static NSCache<NSString *, UIImage *> *_imageCache;
             [uri hasPrefix:@"file://"] ? [uri substringFromIndex:7] : uri;
         image = [UIImage imageWithContentsOfFile:path];
         if (image) {
-          image = [image imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+          image =
+              [image imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
           [_imageCache setObject:image forKey:uri];
         }
       } else {
@@ -161,11 +165,14 @@ static NSCache<NSString *, UIImage *> *_imageCache;
       NSString *uri = remoteUri;
       dispatch_async(dispatch_get_global_queue(QOS_CLASS_USER_INITIATED, 0), ^{
         NSURL *url = [NSURL URLWithString:uri];
-        if (!url) return;
+        if (!url)
+          return;
         NSData *data = [NSData dataWithContentsOfURL:url];
-        if (!data) return;
+        if (!data)
+          return;
         UIImage *img = [UIImage imageWithData:data];
-        if (!img) return;
+        if (!img)
+          return;
         img = [img imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
         [_imageCache setObject:img forKey:uri];
         dispatch_async(dispatch_get_main_queue(), ^{
