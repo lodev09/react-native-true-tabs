@@ -44,6 +44,10 @@ interface ScreenProps<T extends string> extends PropsWithChildren {
   name: T;
 }
 
+interface ProviderProps<T extends string> extends PropsWithChildren {
+  initialTab?: T;
+}
+
 interface TrueTabsState<T extends string> {
   selectedTab: T;
   setSelectedTab: (tab: T) => void;
@@ -63,12 +67,8 @@ export const createTrueTabs = <const T extends string>(
     return ctx;
   };
 
-  interface ProviderProps extends PropsWithChildren {
-    initialTab?: T;
-  }
-
   const Provider = forwardRef(function Provider(
-    props: ProviderProps,
+    props: ProviderProps<T>,
     ref: Ref<TrueTabsRef<T>>
   ) {
     const { initialTab, children } = props;
