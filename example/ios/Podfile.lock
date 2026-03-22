@@ -2477,8 +2477,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - SocketRocket
     - Yoga
-  - SocketRocket (0.7.1)
-  - TrueTabs (0.1.0):
+  - RNTrueTabs (0.1.0-alpha.2):
     - boost
     - DoubleConversion
     - fast_float
@@ -2506,6 +2505,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - SocketRocket
     - Yoga
+  - SocketRocket (0.7.1)
   - Yoga (0.0.0)
 
 DEPENDENCIES:
@@ -2587,8 +2587,8 @@ DEPENDENCIES:
   - ReactCodegen (from `build/generated/ios/ReactCodegen`)
   - ReactCommon/turbomodule/core (from `../node_modules/react-native/ReactCommon`)
   - "RNTrueSheet (from `../node_modules/@lodev09/react-native-true-sheet`)"
+  - RNTrueTabs (from `../..`)
   - SocketRocket (~> 0.7.1)
-  - TrueTabs (from `../..`)
   - Yoga (from `../node_modules/react-native/ReactCommon/yoga`)
 
 SPEC REPOS:
@@ -2751,7 +2751,7 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/ReactCommon"
   RNTrueSheet:
     :path: "../node_modules/@lodev09/react-native-true-sheet"
-  TrueTabs:
+  RNTrueTabs:
     :path: "../.."
   Yoga:
     :path: "../node_modules/react-native/ReactCommon/yoga"
@@ -2834,8 +2834,8 @@ SPEC CHECKSUMS:
   ReactCodegen: 11c08ff43a62009d48c71de000352e4515918801
   ReactCommon: 424cc34cf5055d69a3dcf02f3436481afb8b0f6f
   RNTrueSheet: ee7a6a91d4de8b2c39715e7cc70bb36d57ecbee0
+  RNTrueTabs: 6dbeeb43e491b9f609f3cc07a8d181b1ddc982cd
   SocketRocket: d4aabe649be1e368d1318fdf28a022d714d65748
-  TrueTabs: a880b4e0b47d0fa09a4c78fb015df91e9f3ea302
   Yoga: 6ca93c8c13f56baeec55eb608577619b17a4d64e
 
 PODFILE CHECKSUM: 62d427a0d18387a529053f985575a27ed79ca6a2
