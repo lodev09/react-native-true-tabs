@@ -1,4 +1,3 @@
-import type { PropsWithChildren } from 'react';
 import type { ImageSourcePropType, ViewProps } from 'react-native';
 
 export interface TabIcon {
@@ -55,24 +54,4 @@ export interface BarProps extends ViewProps {
    * Selected tab tint color.
    */
   activeTintColor?: string;
-}
-
-export interface ScreenProps<T extends string> extends PropsWithChildren {
-  /**
-   * Tab name this screen is associated with.
-   */
-  name: T;
-}
-
-export interface ProviderProps<T extends string> extends PropsWithChildren {
-  /**
-   * Tab to select on first render. Defaults to the first tab.
-   */
-  initialTab?: T;
-}
-
-export interface TrueTabsState<T extends string> {
-  selectedTab: T;
-  setSelectedTab: (tab: T) => void;
-  tabs: TabConfig<T>[];
 }

@@ -59,8 +59,6 @@ export class TrueTabs<T extends string = string> extends Component<
     const {
       tabs,
       selectedTab,
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      onTabSelect,
       translucent,
       tintColor,
       activeTintColor,

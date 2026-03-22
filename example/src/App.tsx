@@ -1,4 +1,4 @@
-import { useRef } from 'react';
+import { useRef, useState } from 'react';
 import { View, Text, StyleSheet, Platform } from 'react-native';
 import { type TrueTabsRef } from '@lodev09/react-native-true-tabs';
 import { TrueSheet } from '@lodev09/react-native-true-sheet';
@@ -12,6 +12,7 @@ import { SettingsScreen } from './screens/SettingsScreen';
 export default function App() {
   const sheetRef = useRef<TrueSheet>(null);
   const tabsRef = useRef<TrueTabsRef<TabName>>(null);
+  const [hideSearch, setHideSearch] = useState(false);
   const c = useTheme();
 
   return (
@@ -27,8 +28,12 @@ export default function App() {
           label="Go to Settings"
           onPress={() => tabsRef.current?.setSelectedTab('settings')}
         />
+        <Button
+          label={hideSearch ? 'Show Search Tab' : 'Hide Search Tab'}
+          onPress={() => setHideSearch((v) => !v)}
+        />
       </View>
-      <Tabs.Provider ref={tabsRef}>
+      <Tabs.Provider ref={tabsRef} hiddenTabs={hideSearch ? ['search'] : []}>
         <TrueSheet
           ref={sheetRef}
           detents={[0.5, 1]}

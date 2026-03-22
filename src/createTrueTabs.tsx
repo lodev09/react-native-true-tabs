@@ -2,20 +2,31 @@ import {
   createContext,
   forwardRef,
   useContext,
+  useEffect,
   useImperativeHandle,
   useMemo,
   useState,
+  type PropsWithChildren,
   type Ref,
 } from 'react';
 import { TrueTabs } from './TrueTabs';
-import type {
-  BarProps,
-  ProviderProps,
-  ScreenProps,
-  TabConfig,
-  TrueTabsRef,
-  TrueTabsState,
-} from './types';
+import type { BarProps, TabConfig, TrueTabsRef } from './types';
+
+interface ProviderProps<T extends string> extends PropsWithChildren {
+  initialTab?: T;
+  hiddenTabs?: T[];
+}
+
+interface TrueTabsState<T extends string> {
+  selectedTab: T;
+  setSelectedTab: (tab: T) => void;
+  tabs: TabConfig<T>[];
+  hiddenTabs: T[];
+}
+
+interface ScreenProps<T extends string> extends PropsWithChildren {
+  name: T;
+}
 
 /**
  * Creates a set of tab components and hooks scoped to a specific tab configuration.
@@ -43,14 +54,23 @@ export const createTrueTabs = <const T extends string>(
     props: ProviderProps<T>,
     ref: Ref<TrueTabsRef<T>>
   ) {
-    const { initialTab, children } = props;
+    const { initialTab, hiddenTabs = [], children } = props;
     const [selectedTab, setSelectedTab] = useState<T>(
       initialTab ?? tabs[0]!.name
     );
 
+    useEffect(() => {
+      if (hiddenTabs.includes(selectedTab)) {
+        const firstVisible = tabs.find((t) => !hiddenTabs.includes(t.name));
+        if (firstVisible) {
+          setSelectedTab(firstVisible.name);
+        }
+      }
+    }, [hiddenTabs, selectedTab]);
+
     const value = useMemo(
-      () => ({ selectedTab, setSelectedTab, tabs }),
-      [selectedTab]
+      () => ({ selectedTab, setSelectedTab, tabs, hiddenTabs }),
+      [selectedTab, hiddenTabs]
     );
 
     useImperativeHandle(ref, () => ({ selectedTab, setSelectedTab }), [
@@ -61,12 +81,20 @@ export const createTrueTabs = <const T extends string>(
   });
 
   const Bar = (props: BarProps) => {
-    const { selectedTab, setSelectedTab } = useTabsContext();
+    const { selectedTab, setSelectedTab, hiddenTabs } = useTabsContext();
+
+    const visibleTabs = useMemo(
+      () =>
+        hiddenTabs.length
+          ? tabs.filter((t) => !hiddenTabs.includes(t.name))
+          : tabs,
+      [hiddenTabs]
+    );
 
     return (
       <TrueTabs
         {...props}
-        tabs={tabs}
+        tabs={visibleTabs}
         selectedTab={selectedTab}
         onTabSelect={setSelectedTab}
       />
@@ -85,8 +113,8 @@ export const createTrueTabs = <const T extends string>(
   };
 
   const useTabs = () => {
-    const { selectedTab, setSelectedTab } = useTabsContext();
-    return { selectedTab, setSelectedTab };
+    const { selectedTab, setSelectedTab, hiddenTabs } = useTabsContext();
+    return { selectedTab, setSelectedTab, hiddenTabs };
   };
 
   return { Provider, Bar, Screen, useTabs };
