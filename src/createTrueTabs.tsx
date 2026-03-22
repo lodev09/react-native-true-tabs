@@ -1,10 +1,14 @@
 import {
   createContext,
+  forwardRef,
   useCallback,
   useContext,
+  useImperativeHandle,
   useMemo,
+  useRef,
   useState,
   type PropsWithChildren,
+  type Ref,
 } from 'react';
 import { Image, type ViewProps } from 'react-native';
 import NativeTrueTabsView from './fabric/TrueTabsNativeComponent';
@@ -25,8 +29,9 @@ function resolveIconUri(icon?: TabConfig['icon']): string | undefined {
   return undefined;
 }
 
-interface ProviderProps<T extends string> extends PropsWithChildren {
-  initialTab?: T;
+export interface TrueTabsRef<T extends string = string> {
+  selectedTab: T;
+  setSelectedTab: (tab: T) => void;
 }
 
 interface BarProps extends ViewProps {
@@ -58,7 +63,14 @@ export const createTrueTabs = <const T extends string>(
     return ctx;
   };
 
-  const Provider = (props: ProviderProps<T>) => {
+  interface ProviderProps extends PropsWithChildren {
+    initialTab?: T;
+  }
+
+  const Provider = forwardRef(function Provider(
+    props: ProviderProps,
+    ref: Ref<TrueTabsRef<T>>
+  ) {
     const { initialTab, children } = props;
     const [selectedTab, setSelectedTab] = useState<T>(
       initialTab ?? tabs[0]!.name
@@ -69,8 +81,12 @@ export const createTrueTabs = <const T extends string>(
       [selectedTab]
     );
 
+    useImperativeHandle(ref, () => ({ selectedTab, setSelectedTab }), [
+      selectedTab,
+    ]);
+
     return <Context.Provider value={value}>{children}</Context.Provider>;
-  };
+  });
 
   const Bar = (props: BarProps) => {
     const { translucent, tintColor, activeTintColor, ...rest } = props;
@@ -126,5 +142,12 @@ export const createTrueTabs = <const T extends string>(
     return <>{children}</>;
   };
 
-  return { Provider, Bar, Screen };
+  const useTabs = () => {
+    const { selectedTab, setSelectedTab } = useTabsContext();
+    return { selectedTab, setSelectedTab };
+  };
+
+  const useRef_ = () => useRef<TrueTabsRef<T>>(null);
+
+  return { Provider, Bar, Screen, useTabs, useRef: useRef_ };
 };

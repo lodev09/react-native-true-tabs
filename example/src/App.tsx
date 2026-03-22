@@ -33,7 +33,7 @@ function SheetFooter() {
         },
       ]}
       tintColor={Platform.select({ android: c.secondaryBackground })}
-      activeTintColor="#34C759"
+      activeTintColor="#FF9500"
     />
   );
 }
