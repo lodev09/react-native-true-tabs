@@ -1,7 +1,7 @@
 {
   "name": "react-native-true-tabs",
   "version": "0.1.0",
-  "description": "Decoupled native tabs for React Native",
+  "description": "Decoupled native tab bars for React Native",
   "main": "./lib/module/index.js",
   "types": "./lib/typescript/src/index.d.ts",
   "exports": {
@@ -37,11 +37,17 @@
     "prepare": "bob build",
     "typecheck": "tsc",
     "lint": "eslint \"**/*.{js,ts,tsx}\"",
-    "release": "release-it --only-version",
+    "format": "prettier --write \"**/*.{ts,tsx}\"",
+    "tidy": "yarn typecheck && yarn lint && yarn format && scripts/objclint.sh && scripts/ktlint.sh",
+    "release": "release-it --preRelease=alpha",
     "test": "jest"
   },
   "keywords": [
     "react-native",
+    "tabs",
+    "tab-bar",
+    "native-tabs",
+    "fabric",
     "ios",
     "android"
   ],
@@ -142,10 +148,19 @@
       "tagName": "v${version}"
     },
     "npm": {
-      "publish": true
+      "publish": false
     },
     "github": {
-      "release": true
+      "release": true,
+      "comments": {
+        "submit": true,
+        "issue": ":rocket: _This issue has been resolved in v${version}. See [${releaseName}](${releaseUrl}) for release notes._",
+        "pr": ":rocket: _This pull request is included in v${version}. See [${releaseName}](${releaseUrl}) for release notes._"
+      }
+    },
+    "hooks": {
+      "before:init": "yarn test",
+      "after:bump": "yarn tidy"
     },
     "plugins": {
       "@release-it/conventional-changelog": {

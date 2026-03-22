@@ -20,21 +20,24 @@ class TrueTabsView(context: Context) : FrameLayout(context) {
     tabLayout.layoutParams = LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT)
     addView(tabLayout)
 
-    tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
-      override fun onTabSelected(tab: TabLayout.Tab) {
-        val index = tab.position
-        if (index == selectedIndex) return
-        selectedIndex = index
+    tabLayout.addOnTabSelectedListener(
+      object : TabLayout.OnTabSelectedListener {
+        override fun onTabSelected(tab: TabLayout.Tab) {
+          val index = tab.position
+          if (index == selectedIndex) return
+          selectedIndex = index
 
-        val reactContext = context as? ReactContext ?: return
-        val eventDispatcher = UIManagerHelper.getEventDispatcherForReactTag(reactContext, id) ?: return
-        val surfaceId = UIManagerHelper.getSurfaceId(this@TrueTabsView)
-        eventDispatcher.dispatchEvent(TabSelectEvent(surfaceId, id, index))
+          val reactContext = context as? ReactContext ?: return
+          val eventDispatcher = UIManagerHelper.getEventDispatcherForReactTag(reactContext, id) ?: return
+          val surfaceId = UIManagerHelper.getSurfaceId(this@TrueTabsView)
+          eventDispatcher.dispatchEvent(TabSelectEvent(surfaceId, id, index))
+        }
+
+        override fun onTabUnselected(tab: TabLayout.Tab) {}
+
+        override fun onTabReselected(tab: TabLayout.Tab) {}
       }
-
-      override fun onTabUnselected(tab: TabLayout.Tab) {}
-      override fun onTabReselected(tab: TabLayout.Tab) {}
-    })
+    )
   }
 
   fun setItems(items: List<TabItemData>) {
@@ -43,17 +46,19 @@ class TrueTabsView(context: Context) : FrameLayout(context) {
       val tab = tabLayout.newTab().setText(item.title)
       if (item.iconUri != null) {
         try {
-          val bitmap = if (item.iconUri.startsWith("file://") || item.iconUri.startsWith("/")) {
-            val path = item.iconUri.removePrefix("file://")
-            BitmapFactory.decodeFile(path)
-          } else {
-            val stream = URL(item.iconUri).openStream()
-            BitmapFactory.decodeStream(stream)
-          }
+          val bitmap =
+            if (item.iconUri.startsWith("file://") || item.iconUri.startsWith("/")) {
+              val path = item.iconUri.removePrefix("file://")
+              BitmapFactory.decodeFile(path)
+            } else {
+              val stream = URL(item.iconUri).openStream()
+              BitmapFactory.decodeStream(stream)
+            }
           if (bitmap != null) {
             tab.icon = BitmapDrawable(context.resources, bitmap)
           }
-        } catch (_: Exception) {}
+        } catch (_: Exception) {
+        }
       }
       if (item.badge != null) {
         tab.orCreateBadge.number = item.badge.toIntOrNull() ?: 0
@@ -74,7 +79,9 @@ class TrueTabsView(context: Context) : FrameLayout(context) {
 
   fun setTintColor(color: Int?) {
     if (color != null) {
-      tabLayout.backgroundTintList = android.content.res.ColorStateList.valueOf(color)
+      tabLayout.backgroundTintList =
+        android.content.res.ColorStateList
+          .valueOf(color)
     }
   }
 
@@ -90,9 +97,4 @@ class TrueTabsView(context: Context) : FrameLayout(context) {
   }
 }
 
-data class TabItemData(
-  val title: String,
-  val sfSymbol: String? = null,
-  val iconUri: String? = null,
-  val badge: String? = null,
-)
+data class TabItemData(val title: String, val sfSymbol: String? = null, val iconUri: String? = null, val badge: String? = null)

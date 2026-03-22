@@ -7,9 +7,7 @@ import com.facebook.react.module.model.ReactModuleInfoProvider
 import com.facebook.react.uimanager.ViewManager
 
 class TrueTabsViewPackage : BaseReactPackage() {
-  override fun createViewManagers(reactContext: ReactApplicationContext): List<ViewManager<*, *>> {
-    return listOf(TrueTabsViewManager())
-  }
+  override fun createViewManagers(reactContext: ReactApplicationContext): List<ViewManager<*, *>> = listOf(TrueTabsViewManager())
 
   override fun getModule(name: String, reactContext: ReactApplicationContext): NativeModule? = null
 

@@ -19,31 +19,33 @@ using namespace facebook::react;
   NSInteger _selectedIndex;
 }
 
-+ (ComponentDescriptorProvider)componentDescriptorProvider
-{
++ (ComponentDescriptorProvider)componentDescriptorProvider {
   return concreteComponentDescriptorProvider<TrueTabsViewComponentDescriptor>();
 }
 
-- (instancetype)initWithFrame:(CGRect)frame
-{
+- (instancetype)initWithFrame:(CGRect)frame {
   if (self = [super initWithFrame:frame]) {
-    static const auto defaultProps = std::make_shared<const TrueTabsViewProps>();
+    static const auto defaultProps =
+        std::make_shared<const TrueTabsViewProps>();
     _props = defaultProps;
     _selectedIndex = 0;
 
     _tabBar = [[UITabBar alloc] initWithFrame:self.bounds];
     _tabBar.delegate = self;
-    _tabBar.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+    _tabBar.autoresizingMask =
+        UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
 
     self.contentView = _tabBar;
   }
   return self;
 }
 
-- (void)updateProps:(Props::Shared const &)props oldProps:(Props::Shared const &)oldProps
-{
-  const auto &oldViewProps = *std::static_pointer_cast<TrueTabsViewProps const>(_props);
-  const auto &newViewProps = *std::static_pointer_cast<TrueTabsViewProps const>(props);
+- (void)updateProps:(Props::Shared const &)props
+           oldProps:(Props::Shared const &)oldProps {
+  const auto &oldViewProps =
+      *std::static_pointer_cast<TrueTabsViewProps const>(_props);
+  const auto &newViewProps =
+      *std::static_pointer_cast<TrueTabsViewProps const>(props);
 
   {
     NSMutableArray<UITabBarItem *> *tabItems = [NSMutableArray new];
@@ -52,11 +54,15 @@ using namespace facebook::react;
 
       UIImage *image = nil;
       if (!item.sfSymbol.empty()) {
-        NSString *symbolName = [NSString stringWithUTF8String:item.sfSymbol.c_str()];
+        NSString *symbolName =
+            [NSString stringWithUTF8String:item.sfSymbol.c_str()];
         image = [UIImage systemImageNamed:symbolName];
       }
 
-      UITabBarItem *tabItem = [[UITabBarItem alloc] initWithTitle:title image:image tag:(NSInteger)tabItems.count];
+      UITabBarItem *tabItem =
+          [[UITabBarItem alloc] initWithTitle:title
+                                        image:image
+                                          tag:(NSInteger)tabItems.count];
 
       if (!item.badge.empty()) {
         NSString *badge = [NSString stringWithUTF8String:item.badge.c_str()];
@@ -68,7 +74,8 @@ using namespace facebook::react;
     [_tabBar setItems:tabItems animated:NO];
 
     _selectedIndex = newViewProps.selectedIndex;
-    if (_selectedIndex >= 0 && _selectedIndex < (NSInteger)_tabBar.items.count) {
+    if (_selectedIndex >= 0 &&
+        _selectedIndex < (NSInteger)_tabBar.items.count) {
       _tabBar.selectedItem = _tabBar.items[_selectedIndex];
     }
   }
@@ -87,7 +94,8 @@ using namespace facebook::react;
 
   if (oldViewProps.activeTintColor != newViewProps.activeTintColor) {
     if (newViewProps.activeTintColor) {
-      _tabBar.tintColor = RCTUIColorFromSharedColor(*newViewProps.activeTintColor);
+      _tabBar.tintColor =
+          RCTUIColorFromSharedColor(*newViewProps.activeTintColor);
     } else {
       _tabBar.tintColor = nil;
     }
@@ -98,8 +106,7 @@ using namespace facebook::react;
 
 #pragma mark - UITabBarDelegate
 
-- (void)tabBar:(UITabBar *)tabBar didSelectItem:(UITabBarItem *)item
-{
+- (void)tabBar:(UITabBar *)tabBar didSelectItem:(UITabBarItem *)item {
   NSInteger index = item.tag;
   if (index == _selectedIndex) {
     return;
@@ -107,7 +114,8 @@ using namespace facebook::react;
 
   _selectedIndex = index;
 
-  const auto &eventEmitter = static_cast<const TrueTabsViewEventEmitter &>(*_eventEmitter);
+  const auto &eventEmitter =
+      static_cast<const TrueTabsViewEventEmitter &>(*_eventEmitter);
   eventEmitter.onTabSelect({.index = static_cast<int>(index)});
 }
 

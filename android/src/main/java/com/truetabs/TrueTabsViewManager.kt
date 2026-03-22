@@ -9,18 +9,16 @@ import com.facebook.react.viewmanagers.TrueTabsViewManagerDelegate
 import com.facebook.react.viewmanagers.TrueTabsViewManagerInterface
 
 @ReactModule(name = TrueTabsViewManager.NAME)
-class TrueTabsViewManager : SimpleViewManager<TrueTabsView>(),
+class TrueTabsViewManager :
+  SimpleViewManager<TrueTabsView>(),
   TrueTabsViewManagerInterface<TrueTabsView> {
-
   private val delegate = TrueTabsViewManagerDelegate(this)
 
   override fun getDelegate(): ViewManagerDelegate<TrueTabsView> = delegate
 
   override fun getName(): String = NAME
 
-  override fun createViewInstance(context: ThemedReactContext): TrueTabsView {
-    return TrueTabsView(context)
-  }
+  override fun createViewInstance(context: ThemedReactContext): TrueTabsView = TrueTabsView(context)
 
   override fun setItems(view: TrueTabsView, items: ReadableArray?) {
     if (items == null) return
@@ -32,7 +30,7 @@ class TrueTabsViewManager : SimpleViewManager<TrueTabsView>(),
           title = map.getString("title") ?: "",
           sfSymbol = if (map.hasKey("sfSymbol")) map.getString("sfSymbol") else null,
           iconUri = if (map.hasKey("iconUri")) map.getString("iconUri") else null,
-          badge = if (map.hasKey("badge")) map.getString("badge") else null,
+          badge = if (map.hasKey("badge")) map.getString("badge") else null
         )
       )
     }
@@ -55,11 +53,10 @@ class TrueTabsViewManager : SimpleViewManager<TrueTabsView>(),
     view.setActiveTintColor(value)
   }
 
-  override fun getExportedCustomDirectEventTypeConstants(): Map<String, Any> {
-    return mapOf(
+  override fun getExportedCustomDirectEventTypeConstants(): Map<String, Any> =
+    mapOf(
       "topTabSelect" to mapOf("registrationName" to "onTabSelect")
     )
-  }
 
   companion object {
     const val NAME = "TrueTabsView"
