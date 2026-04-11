@@ -38,18 +38,26 @@ class TrueTabsView(context: Context) : FrameLayout(context) {
       object : TabLayout.OnTabSelectedListener {
         override fun onTabSelected(tab: TabLayout.Tab) {
           val index = tab.position
-          if (index == selectedIndex) return
-          selectedIndex = index
 
           val reactContext = context as? ReactContext ?: return
           val eventDispatcher = UIManagerHelper.getEventDispatcherForReactTag(reactContext, id) ?: return
           val surfaceId = UIManagerHelper.getSurfaceId(this@TrueTabsView)
+          eventDispatcher.dispatchEvent(TabPressEvent(surfaceId, id, index))
+
+          if (index == selectedIndex) return
+          selectedIndex = index
           eventDispatcher.dispatchEvent(TabSelectEvent(surfaceId, id, index))
         }
 
         override fun onTabUnselected(tab: TabLayout.Tab) {}
 
-        override fun onTabReselected(tab: TabLayout.Tab) {}
+        override fun onTabReselected(tab: TabLayout.Tab) {
+          val index = tab.position
+          val reactContext = context as? ReactContext ?: return
+          val eventDispatcher = UIManagerHelper.getEventDispatcherForReactTag(reactContext, id) ?: return
+          val surfaceId = UIManagerHelper.getSurfaceId(this@TrueTabsView)
+          eventDispatcher.dispatchEvent(TabPressEvent(surfaceId, id, index))
+        }
       }
     )
   }

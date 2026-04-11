@@ -1,5 +1,7 @@
 import { useColorScheme } from 'react-native';
 
+export const TAB_BAR_HEIGHT = 90;
+
 const colors = {
   light: {
     background: '#ffffff',

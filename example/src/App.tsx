@@ -2,7 +2,7 @@ import { useRef, useState } from 'react';
 import { View, Text, StyleSheet, Platform } from 'react-native';
 import { type TrueTabsRef } from '@lodev09/react-native-true-tabs';
 import { TrueSheet } from '@lodev09/react-native-true-sheet';
-import { useTheme } from './theme';
+import { TAB_BAR_HEIGHT, useTheme } from './theme';
 import { Tabs, type TabName } from './tabs';
 import { Button } from './components/Button';
 import { HomeScreen } from './screens/HomeScreen';
@@ -91,6 +91,6 @@ const styles = StyleSheet.create({
     marginTop: 8,
   },
   tabBar: {
-    height: 90,
+    height: TAB_BAR_HEIGHT,
   },
 });

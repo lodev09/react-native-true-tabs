@@ -98,6 +98,11 @@ static NSCache<NSString *, UIImage *> *_imageCache;
   [super updateProps:props oldProps:oldProps];
 }
 
+- (void)layoutSubviews {
+  [super layoutSubviews];
+  _tabBar.frame = self.bounds;
+}
+
 - (void)finalizeUpdates:(RNComponentViewUpdateMask)updateMask {
   [super finalizeUpdates:updateMask];
 
@@ -187,14 +192,16 @@ static NSCache<NSString *, UIImage *> *_imageCache;
 
 - (void)tabBar:(UITabBar *)tabBar didSelectItem:(UITabBarItem *)item {
   NSInteger index = item.tag;
+
+  const auto &eventEmitter =
+      static_cast<const TrueTabsViewEventEmitter &>(*_eventEmitter);
+  eventEmitter.onTabPress({.index = static_cast<int>(index)});
+
   if (index == _selectedIndex) {
     return;
   }
 
   _selectedIndex = index;
-
-  const auto &eventEmitter =
-      static_cast<const TrueTabsViewEventEmitter &>(*_eventEmitter);
   eventEmitter.onTabSelect({.index = static_cast<int>(index)});
 }
 

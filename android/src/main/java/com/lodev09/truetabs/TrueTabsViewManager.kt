@@ -55,7 +55,8 @@ class TrueTabsViewManager :
 
   override fun getExportedCustomDirectEventTypeConstants(): Map<String, Any> =
     mapOf(
-      "topTabSelect" to mapOf("registrationName" to "onTabSelect")
+      "topTabSelect" to mapOf("registrationName" to "onTabSelect"),
+      "topTabPress" to mapOf("registrationName" to "onTabPress")
     )
 
   companion object {

@@ -16,6 +16,7 @@ export interface NativeProps extends ViewProps {
   items: ReadonlyArray<TabItem>;
   selectedIndex?: Int32;
   onTabSelect?: DirectEventHandler<Readonly<{ index: Int32 }>>;
+  onTabPress?: DirectEventHandler<Readonly<{ index: Int32 }>>;
   translucent?: boolean;
   tintColor?: ColorValue;
   activeTintColor?: ColorValue;

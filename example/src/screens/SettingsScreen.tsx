@@ -1,7 +1,5 @@
 import { View, Text, StyleSheet, ScrollView } from 'react-native';
-import { useTheme } from '../theme';
-
-const TAB_BAR_HEIGHT = 90;
+import { useTheme, TAB_BAR_HEIGHT } from '../theme';
 
 const SECTIONS = [
   {

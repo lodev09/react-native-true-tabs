@@ -22,6 +22,7 @@ export interface TrueTabsProps<T extends string = string> extends BarProps {
   tabs: TabConfig<T>[];
   selectedTab: T;
   onTabSelect?: (tab: T) => void;
+  onTabPress?: (tab: T) => void;
 }
 
 export class TrueTabs<T extends string = string> extends Component<
@@ -55,6 +56,13 @@ export class TrueTabs<T extends string = string> extends Component<
     }
   };
 
+  private handleTabPress = (event: { nativeEvent: { index: number } }) => {
+    const tab = this.props.tabs[event.nativeEvent.index];
+    if (tab) {
+      this.props.onTabPress?.(tab.name);
+    }
+  };
+
   render() {
     const {
       tabs,
@@ -74,6 +82,7 @@ export class TrueTabs<T extends string = string> extends Component<
         items={this.getItems()}
         selectedIndex={selectedIndex}
         onTabSelect={this.handleTabSelect}
+        onTabPress={this.handleTabPress}
         translucent={translucent}
         tintColor={tintColor}
         activeTintColor={activeTintColor}

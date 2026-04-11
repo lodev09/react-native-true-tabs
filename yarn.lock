@@ -2479,9 +2479,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@lodev09/react-native-true-sheet@npm:3.10.0-beta.3":
-  version: 3.10.0-beta.3
-  resolution: "@lodev09/react-native-true-sheet@npm:3.10.0-beta.3"
+"@lodev09/react-native-true-sheet@npm:3.10.0":
+  version: 3.10.0
+  resolution: "@lodev09/react-native-true-sheet@npm:3.10.0"
   peerDependencies:
     "@gorhom/bottom-sheet": ">=5"
     "@react-navigation/native": ">=7"
@@ -2498,7 +2498,7 @@ __metadata:
       optional: true
     react-native-worklets:
       optional: true
-  checksum: 10c0/ed7e01e2ed14edc660a770e28be74aae8abc304a7847e89b1bb4e913a19ab10d65ad49e6aefa89d04e3d34719697521d124e4de4206c6ab05b2cfaa7a9e73309
+  checksum: 10c0/b9b35d174b66918fb18831f9fade268e0ff4b6ec646d56830f336d6c7739024f68eac1349d071a1be6c76bfaff931642af41b1465ac429c351cb1581e6100630
   languageName: node
   linkType: hard
 
@@ -2509,7 +2509,7 @@ __metadata:
     "@babel/core": "npm:^7.25.2"
     "@babel/preset-env": "npm:^7.25.3"
     "@babel/runtime": "npm:^7.25.0"
-    "@lodev09/react-native-true-sheet": "npm:3.10.0-beta.3"
+    "@lodev09/react-native-true-sheet": "npm:3.10.0"
     "@react-native-community/cli": "npm:20.0.0"
     "@react-native-community/cli-platform-android": "npm:20.0.0"
     "@react-native-community/cli-platform-ios": "npm:20.0.0"
