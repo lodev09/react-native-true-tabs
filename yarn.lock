@@ -2479,26 +2479,29 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@lodev09/react-native-true-sheet@npm:3.10.0":
-  version: 3.10.0
-  resolution: "@lodev09/react-native-true-sheet@npm:3.10.0"
+"@lodev09/react-native-true-sheet@npm:3.11.0-beta.15":
+  version: 3.11.0-beta.15
+  resolution: "@lodev09/react-native-true-sheet@npm:3.11.0-beta.15"
   peerDependencies:
-    "@gorhom/bottom-sheet": ">=5"
-    "@react-navigation/native": ">=7"
+    "@radix-ui/react-dialog": ">=1"
+    "@radix-ui/react-presence": ">=1"
+    "@react-navigation/core": ">=7"
     react: "*"
     react-native: "*"
     react-native-reanimated: ">=4"
     react-native-worklets: "*"
   peerDependenciesMeta:
-    "@gorhom/bottom-sheet":
+    "@radix-ui/react-dialog":
       optional: true
-    "@react-navigation/native":
+    "@radix-ui/react-presence":
+      optional: true
+    "@react-navigation/core":
       optional: true
     react-native-reanimated:
       optional: true
     react-native-worklets:
       optional: true
-  checksum: 10c0/b9b35d174b66918fb18831f9fade268e0ff4b6ec646d56830f336d6c7739024f68eac1349d071a1be6c76bfaff931642af41b1465ac429c351cb1581e6100630
+  checksum: 10c0/fdc4dde65020f00ad5d29b9cac13257b8e3c7ba8ccde645dffc88103a71a4ec27078ce6b46720f76798bac13f80cd2095004900d2b2d938a5e7780896d976877
   languageName: node
   linkType: hard
 
@@ -2509,7 +2512,7 @@ __metadata:
     "@babel/core": "npm:^7.25.2"
     "@babel/preset-env": "npm:^7.25.3"
     "@babel/runtime": "npm:^7.25.0"
-    "@lodev09/react-native-true-sheet": "npm:3.10.0"
+    "@lodev09/react-native-true-sheet": "npm:3.11.0-beta.15"
     "@react-native-community/cli": "npm:20.0.0"
     "@react-native-community/cli-platform-android": "npm:20.0.0"
     "@react-native-community/cli-platform-ios": "npm:20.0.0"

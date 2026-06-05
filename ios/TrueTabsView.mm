@@ -81,10 +81,10 @@ static NSCache<NSString *, UIImage *> *_imageCache;
     _tabBar.translucent = newViewProps.translucent;
   }
 
-  if (oldViewProps.tintColor != newViewProps.tintColor) {
+  if (oldViewProps.barTintColor != newViewProps.barTintColor) {
     _tabBar.barTintColor =
-        newViewProps.tintColor
-            ? RCTUIColorFromSharedColor(*newViewProps.tintColor)
+        newViewProps.barTintColor
+            ? RCTUIColorFromSharedColor(*newViewProps.barTintColor)
             : nil;
   }
 
@@ -92,6 +92,13 @@ static NSCache<NSString *, UIImage *> *_imageCache;
     _tabBar.tintColor =
         newViewProps.activeTintColor
             ? RCTUIColorFromSharedColor(*newViewProps.activeTintColor)
+            : nil;
+  }
+
+  if (oldViewProps.inactiveTintColor != newViewProps.inactiveTintColor) {
+    _tabBar.unselectedItemTintColor =
+        newViewProps.inactiveTintColor
+            ? RCTUIColorFromSharedColor(*newViewProps.inactiveTintColor)
             : nil;
   }
 

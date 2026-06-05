@@ -18,8 +18,9 @@ export interface NativeProps extends ViewProps {
   onTabSelect?: DirectEventHandler<Readonly<{ index: Int32 }>>;
   onTabPress?: DirectEventHandler<Readonly<{ index: Int32 }>>;
   translucent?: boolean;
-  tintColor?: ColorValue;
+  barTintColor?: ColorValue;
   activeTintColor?: ColorValue;
+  inactiveTintColor?: ColorValue;
 }
 
 export default codegenNativeComponent<NativeProps>('TrueTabsView');

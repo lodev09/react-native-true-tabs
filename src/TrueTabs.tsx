@@ -68,8 +68,9 @@ export class TrueTabs<T extends string = string> extends Component<
       tabs,
       selectedTab,
       translucent,
-      tintColor,
+      barTintColor,
       activeTintColor,
+      inactiveTintColor,
       ...rest
     } = this.props;
 
@@ -84,8 +85,9 @@ export class TrueTabs<T extends string = string> extends Component<
         onTabSelect={this.handleTabSelect}
         onTabPress={this.handleTabPress}
         translucent={translucent}
-        tintColor={tintColor}
+        barTintColor={barTintColor}
         activeTintColor={activeTintColor}
+        inactiveTintColor={inactiveTintColor}
       />
     );
   }

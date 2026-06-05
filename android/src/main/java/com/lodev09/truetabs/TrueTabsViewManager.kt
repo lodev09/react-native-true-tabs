@@ -45,12 +45,16 @@ class TrueTabsViewManager :
     view.setTranslucent(value)
   }
 
-  override fun setTintColor(view: TrueTabsView, value: Int?) {
-    view.setTintColor(value)
+  override fun setBarTintColor(view: TrueTabsView, value: Int?) {
+    view.setBarTintColor(value)
   }
 
   override fun setActiveTintColor(view: TrueTabsView, value: Int?) {
     view.setActiveTintColor(value)
+  }
+
+  override fun setInactiveTintColor(view: TrueTabsView, value: Int?) {
+    view.setInactiveTintColor(value)
   }
 
   override fun getExportedCustomDirectEventTypeConstants(): Map<String, Any> =

@@ -113,8 +113,9 @@ The native tab bar. Accepts all `ViewProps` plus:
 | Prop | Type | Description |
 |------|------|-------------|
 | `translucent` | `boolean` | Translucent tab bar (iOS) |
-| `tintColor` | `string` | Tab bar background color |
+| `barTintColor` | `string` | Tab bar background color |
 | `activeTintColor` | `string` | Selected tab color |
+| `inactiveTintColor` | `string` | Unselected tab color |
 
 #### `Screen`
 
@@ -138,8 +139,9 @@ Standalone native tab bar. Accepts all `ViewProps` plus:
 | `selectedTab` | `T` | Currently selected tab name |
 | `onTabSelect` | `(tab: T) => void` | Called when a tab is selected |
 | `translucent` | `boolean` | Translucent tab bar (iOS) |
-| `tintColor` | `string` | Tab bar background color |
+| `barTintColor` | `string` | Tab bar background color |
 | `activeTintColor` | `string` | Selected tab color |
+| `inactiveTintColor` | `string` | Unselected tab color |
 
 ### `TrueTabsRef`
 

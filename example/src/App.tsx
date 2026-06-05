@@ -48,7 +48,7 @@ export default function App() {
                   android: { backgroundColor: c.secondaryBackground },
                 }),
               ]}
-              tintColor={Platform.select({ android: c.secondaryBackground })}
+              barTintColor={Platform.select({ android: c.secondaryBackground })}
               activeTintColor="#FF9500"
             />
           }

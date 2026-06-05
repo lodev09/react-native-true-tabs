@@ -18,9 +18,11 @@ import java.net.URL
 import java.util.concurrent.Executors
 
 class TrueTabsView(context: Context) : FrameLayout(context) {
-  private val materialContext: Context = ContextThemeWrapper(context, com.google.android.material.R.style.Theme_MaterialComponents)
+  private val materialContext: Context = ContextThemeWrapper(context, com.google.android.material.R.style.Theme_MaterialComponents_DayNight)
   private val tabLayout: TabLayout = TabLayout(materialContext)
   private var selectedIndex: Int = 0
+  private var activeColor: Int? = null
+  private var inactiveColor: Int? = null
 
   companion object {
     private const val TAG = "TrueTabsView"
@@ -128,7 +130,7 @@ class TrueTabsView(context: Context) : FrameLayout(context) {
     }
   }
 
-  fun setTintColor(color: Int?) {
+  fun setBarTintColor(color: Int?) {
     if (color != null) {
       tabLayout.backgroundTintList =
         android.content.res.ColorStateList.valueOf(color)
@@ -136,10 +138,26 @@ class TrueTabsView(context: Context) : FrameLayout(context) {
   }
 
   fun setActiveTintColor(color: Int?) {
+    activeColor = color
     if (color != null) {
       tabLayout.setSelectedTabIndicatorColor(color)
-      tabLayout.setTabTextColors(tabLayout.tabTextColors?.defaultColor ?: 0, color)
     }
+    applyTabTextColors()
+  }
+
+  fun setInactiveTintColor(color: Int?) {
+    inactiveColor = color
+    applyTabTextColors()
+  }
+
+  private fun applyTabTextColors() {
+    if (activeColor == null && inactiveColor == null) return
+    val current = tabLayout.tabTextColors
+    val active = activeColor
+      ?: current?.getColorForState(intArrayOf(android.R.attr.state_selected), 0)
+      ?: current?.defaultColor ?: 0
+    val inactive = inactiveColor ?: current?.defaultColor ?: 0
+    tabLayout.setTabTextColors(inactive, active)
   }
 
   fun setTranslucent(translucent: Boolean) {

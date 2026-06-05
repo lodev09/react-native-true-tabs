@@ -1,4 +1,4 @@
-import type { ImageSourcePropType, ViewProps } from 'react-native';
+import type { ColorValue, ImageSourcePropType, ViewProps } from 'react-native';
 
 export interface TabIcon {
   /**
@@ -49,9 +49,13 @@ export interface BarProps extends ViewProps {
   /**
    * Tab bar background color.
    */
-  tintColor?: string;
+  barTintColor?: ColorValue;
   /**
    * Selected tab tint color.
    */
-  activeTintColor?: string;
+  activeTintColor?: ColorValue;
+  /**
+   * Unselected tab tint color.
+   */
+  inactiveTintColor?: ColorValue;
 }
