@@ -58,4 +58,12 @@ export interface BarProps extends ViewProps {
    * Unselected tab tint color.
    */
   inactiveTintColor?: ColorValue;
+  /**
+   * Pill-shaped background behind the selected tab icon (Android only).
+   */
+  activeIndicatorColor?: ColorValue;
+  /**
+   * Selected tab item background color (Android only).
+   */
+  activeBackgroundColor?: ColorValue;
 }

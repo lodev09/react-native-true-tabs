@@ -3,7 +3,13 @@ package com.lodev09.truetabs
 import android.content.Context
 import android.content.res.ColorStateList
 import android.graphics.Bitmap
+import android.graphics.Color
 import android.graphics.drawable.BitmapDrawable
+import android.graphics.drawable.Drawable
+import android.graphics.drawable.GradientDrawable
+import android.graphics.drawable.LayerDrawable
+import android.graphics.drawable.RippleDrawable
+import android.graphics.drawable.StateListDrawable
 import android.util.Log
 import android.util.LruCache
 import android.view.ContextThemeWrapper
@@ -23,6 +29,8 @@ import com.facebook.react.uimanager.UIManagerHelper
 import com.facebook.react.views.imagehelper.ResourceDrawableIdHelper
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.navigation.NavigationBarView
+import com.google.android.material.shape.RelativeCornerSize
+import com.google.android.material.shape.ShapeAppearanceModel
 
 class TrueTabsView(context: Context) : FrameLayout(context) {
   private val materialContext: Context = ContextThemeWrapper(context, com.google.android.material.R.style.Theme_MaterialComponents_DayNight)
@@ -163,6 +171,56 @@ class TrueTabsView(context: Context) : FrameLayout(context) {
   fun setInactiveTintColor(color: Int?) {
     inactiveColor = color
     applyItemColors()
+  }
+
+  fun setActiveIndicatorColor(color: Int?) {
+    if (color != null) {
+      val density = resources.displayMetrics.density
+      bottomNav.itemActiveIndicatorColor = ColorStateList.valueOf(color)
+      bottomNav.itemActiveIndicatorWidth = (64 * density).toInt()
+      bottomNav.itemActiveIndicatorHeight = (32 * density).toInt()
+      bottomNav.itemActiveIndicatorMarginHorizontal = (4 * density).toInt()
+      bottomNav.itemActiveIndicatorShapeAppearance =
+        ShapeAppearanceModel.builder().setAllCornerSizes(RelativeCornerSize(0.5f)).build()
+      bottomNav.isItemActiveIndicatorEnabled = true
+    } else {
+      bottomNav.isItemActiveIndicatorEnabled = false
+    }
+  }
+
+  fun setActiveBackgroundColor(color: Int?) {
+    if (color != null) {
+      val density = resources.displayMetrics.density
+      val insetH = (6 * density).toInt()
+      val insetV = (3 * density).toInt()
+      val radius = 8 * density
+
+      // LayerDrawable with explicit zero padding — InsetDrawable would push its
+      // insets into the view as padding and squeeze the icon/label.
+      fun roundedRect(fill: Int): Drawable {
+        val shape = GradientDrawable().apply {
+          setColor(fill)
+          cornerRadius = radius
+        }
+        return LayerDrawable(arrayOf<Drawable>(shape)).apply {
+          setLayerInset(0, insetH, insetV, insetH, insetV)
+          setPadding(0, 0, 0, 0)
+        }
+      }
+
+      val checked = StateListDrawable().apply {
+        addState(intArrayOf(android.R.attr.state_checked), roundedRect(color))
+      }
+      // Setting itemBackground replaces the default ripple; wrap to keep press feedback.
+      val ripple = bottomNav.itemRippleColor
+      bottomNav.itemBackground = if (ripple != null) {
+        RippleDrawable(ripple, checked, roundedRect(Color.WHITE))
+      } else {
+        checked
+      }
+    } else {
+      bottomNav.itemBackground = null
+    }
   }
 
   private fun applyItemColors() {

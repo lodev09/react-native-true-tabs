@@ -21,6 +21,8 @@ export interface NativeProps extends ViewProps {
   barTintColor?: ColorValue;
   activeTintColor?: ColorValue;
   inactiveTintColor?: ColorValue;
+  activeIndicatorColor?: ColorValue;
+  activeBackgroundColor?: ColorValue;
 }
 
 export default codegenNativeComponent<NativeProps>('TrueTabsView');

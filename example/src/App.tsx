@@ -42,14 +42,12 @@ export default function App() {
           dismissible={false}
           footer={
             <Tabs.Bar
-              style={[
-                styles.tabBar,
-                Platform.select({
-                  android: { backgroundColor: c.secondaryBackground },
-                }),
-              ]}
-              barTintColor={Platform.select({ android: c.secondaryBackground })}
+              style={styles.tabBar}
+              barTintColor={Platform.select({ android: c.background })}
               activeTintColor="#FF9500"
+              activeIndicatorColor={Platform.select({
+                android: 'rgba(255, 149, 0, 0.2)',
+              })}
             />
           }
           backgroundColor={Platform.OS === 'android' ? c.background : undefined}

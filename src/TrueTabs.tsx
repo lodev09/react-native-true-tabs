@@ -71,6 +71,8 @@ export class TrueTabs<T extends string = string> extends Component<
       barTintColor,
       activeTintColor,
       inactiveTintColor,
+      activeIndicatorColor,
+      activeBackgroundColor,
       ...rest
     } = this.props;
 
@@ -88,6 +90,8 @@ export class TrueTabs<T extends string = string> extends Component<
         barTintColor={barTintColor}
         activeTintColor={activeTintColor}
         inactiveTintColor={inactiveTintColor}
+        activeIndicatorColor={activeIndicatorColor}
+        activeBackgroundColor={activeBackgroundColor}
       />
     );
   }

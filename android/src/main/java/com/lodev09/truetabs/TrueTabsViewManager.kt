@@ -57,6 +57,14 @@ class TrueTabsViewManager :
     view.setInactiveTintColor(value)
   }
 
+  override fun setActiveIndicatorColor(view: TrueTabsView, value: Int?) {
+    view.setActiveIndicatorColor(value)
+  }
+
+  override fun setActiveBackgroundColor(view: TrueTabsView, value: Int?) {
+    view.setActiveBackgroundColor(value)
+  }
+
   override fun getExportedCustomDirectEventTypeConstants(): Map<String, Any> =
     mapOf(
       "topTabSelect" to mapOf("registrationName" to "onTabSelect"),

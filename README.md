@@ -116,6 +116,8 @@ The native tab bar. Accepts all `ViewProps` plus:
 | `barTintColor` | `string` | Tab bar background color |
 | `activeTintColor` | `string` | Selected tab color |
 | `inactiveTintColor` | `string` | Unselected tab color |
+| `activeIndicatorColor` | `string` | Pill background behind the selected tab icon (Android) |
+| `activeBackgroundColor` | `string` | Selected tab item background color (Android) |
 
 #### `Screen`
 
@@ -142,6 +144,8 @@ Standalone native tab bar. Accepts all `ViewProps` plus:
 | `barTintColor` | `string` | Tab bar background color |
 | `activeTintColor` | `string` | Selected tab color |
 | `inactiveTintColor` | `string` | Unselected tab color |
+| `activeIndicatorColor` | `string` | Pill background behind the selected tab icon (Android) |
+| `activeBackgroundColor` | `string` | Selected tab item background color (Android) |
 
 ### `TrueTabsRef`
 
