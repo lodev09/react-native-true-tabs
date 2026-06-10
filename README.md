@@ -1,6 +1,6 @@
 # React Native TrueTabs
 
-Decoupled native tab bars for React Native. Uses `UITabBar` on iOS and Material `TabLayout` on Android via Fabric.
+Decoupled native tab bars for React Native. Uses `UITabBar` on iOS and Material `BottomNavigationView` on Android via Fabric.
 
 ## Installation
 

@@ -1,6 +1,7 @@
 package com.lodev09.truetabs
 
 import android.content.Context
+import android.content.res.ColorStateList
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.drawable.BitmapDrawable
@@ -9,17 +10,20 @@ import android.os.Looper
 import android.util.Log
 import android.util.LruCache
 import android.view.ContextThemeWrapper
+import android.view.Menu
+import android.view.MenuItem
 import android.view.View.MeasureSpec
 import android.widget.FrameLayout
 import com.facebook.react.bridge.ReactContext
 import com.facebook.react.uimanager.UIManagerHelper
-import com.google.android.material.tabs.TabLayout
+import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.google.android.material.navigation.NavigationBarView
 import java.net.URL
 import java.util.concurrent.Executors
 
 class TrueTabsView(context: Context) : FrameLayout(context) {
   private val materialContext: Context = ContextThemeWrapper(context, com.google.android.material.R.style.Theme_MaterialComponents_DayNight)
-  private val tabLayout: TabLayout = TabLayout(materialContext)
+  private val bottomNav: BottomNavigationView = BottomNavigationView(materialContext)
   private var selectedIndex: Int = 0
   private var activeColor: Int? = null
   private var inactiveColor: Int? = null
@@ -33,131 +37,147 @@ class TrueTabsView(context: Context) : FrameLayout(context) {
   private val mainHandler = Handler(Looper.getMainLooper())
 
   init {
-    tabLayout.layoutParams = LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT)
-    addView(tabLayout)
+    bottomNav.layoutParams = LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT)
+    bottomNav.labelVisibilityMode = NavigationBarView.LABEL_VISIBILITY_LABELED
+    addView(bottomNav)
 
-    tabLayout.addOnTabSelectedListener(
-      object : TabLayout.OnTabSelectedListener {
-        override fun onTabSelected(tab: TabLayout.Tab) {
-          val index = tab.position
-
-          val reactContext = context as? ReactContext ?: return
-          val eventDispatcher = UIManagerHelper.getEventDispatcherForReactTag(reactContext, id) ?: return
-          val surfaceId = UIManagerHelper.getSurfaceId(this@TrueTabsView)
-          eventDispatcher.dispatchEvent(TabPressEvent(surfaceId, id, index))
-
-          if (index == selectedIndex) return
-          selectedIndex = index
-          eventDispatcher.dispatchEvent(TabSelectEvent(surfaceId, id, index))
-        }
-
-        override fun onTabUnselected(tab: TabLayout.Tab) {}
-
-        override fun onTabReselected(tab: TabLayout.Tab) {
-          val index = tab.position
-          val reactContext = context as? ReactContext ?: return
-          val eventDispatcher = UIManagerHelper.getEventDispatcherForReactTag(reactContext, id) ?: return
-          val surfaceId = UIManagerHelper.getSurfaceId(this@TrueTabsView)
-          eventDispatcher.dispatchEvent(TabPressEvent(surfaceId, id, index))
-        }
+    bottomNav.setOnItemSelectedListener { item ->
+      val index = item.itemId
+      dispatchPress(index)
+      if (index != selectedIndex) {
+        selectedIndex = index
+        dispatchSelect(index)
       }
-    )
+      true
+    }
+
+    bottomNav.setOnItemReselectedListener { item ->
+      dispatchPress(item.itemId)
+    }
+  }
+
+  private fun dispatchPress(index: Int) {
+    val reactContext = context as? ReactContext ?: return
+    val eventDispatcher = UIManagerHelper.getEventDispatcherForReactTag(reactContext, id) ?: return
+    val surfaceId = UIManagerHelper.getSurfaceId(this)
+    eventDispatcher.dispatchEvent(TabPressEvent(surfaceId, id, index))
+  }
+
+  private fun dispatchSelect(index: Int) {
+    val reactContext = context as? ReactContext ?: return
+    val eventDispatcher = UIManagerHelper.getEventDispatcherForReactTag(reactContext, id) ?: return
+    val surfaceId = UIManagerHelper.getSurfaceId(this)
+    eventDispatcher.dispatchEvent(TabSelectEvent(surfaceId, id, index))
   }
 
   fun setItems(items: List<TabItemData>) {
-    tabLayout.removeAllTabs()
-    for (item in items) {
-      val tab = tabLayout.newTab().setText(item.title)
+    bottomNav.menu.clear()
+    val count = minOf(items.size, bottomNav.maxItemCount)
+    if (items.size > count) {
+      Log.w(TAG, "BottomNavigationView supports up to ${bottomNav.maxItemCount} items, got ${items.size}")
+    }
+    for (i in 0 until count) {
+      val item = items[i]
+      val menuItem = bottomNav.menu.add(Menu.NONE, i, Menu.NONE, item.title)
       if (item.iconUri != null) {
-        val cached = imageCache.get(item.iconUri)
-        if (cached != null) {
-          tab.icon = BitmapDrawable(context.resources, cached)
-        } else if (item.iconUri.startsWith("file://") || item.iconUri.startsWith("/")) {
-          try {
-            val path = item.iconUri.removePrefix("file://")
-            val bitmap = BitmapFactory.decodeFile(path)
-            if (bitmap != null) {
-              imageCache.put(item.iconUri, bitmap)
-              tab.icon = BitmapDrawable(context.resources, bitmap)
-            }
-          } catch (e: Exception) {
-            Log.w(TAG, "Failed to load icon: ${item.iconUri}", e)
-          }
-        } else {
-          val uri = item.iconUri
-          executor.execute {
-            try {
-              val bitmap = URL(uri).openStream().use { stream ->
-                BitmapFactory.decodeStream(stream)
-              }
-              if (bitmap != null) {
-                imageCache.put(uri, bitmap)
-                mainHandler.post {
-                  tab.icon = BitmapDrawable(context.resources, bitmap)
-                }
-              }
-            } catch (e: Exception) {
-              Log.w(TAG, "Failed to load icon: $uri", e)
-            }
-          }
-        }
+        loadIcon(menuItem, item.iconUri)
       }
       if (item.badge != null) {
-        tab.orCreateBadge.number = item.badge.toIntOrNull() ?: 0
+        bottomNav.getOrCreateBadge(i).number = item.badge.toIntOrNull() ?: 0
+      } else {
+        bottomNav.removeBadge(i)
       }
-      tabLayout.addTab(tab, false)
     }
-    if (selectedIndex in 0 until tabLayout.tabCount) {
-      tabLayout.getTabAt(selectedIndex)?.select()
+    if (selectedIndex in 0 until count) {
+      bottomNav.selectedItemId = selectedIndex
     }
-    remeasure()
   }
 
-  private fun remeasure() {
-    tabLayout.post {
-      tabLayout.measure(
-        MeasureSpec.makeMeasureSpec(tabLayout.width, MeasureSpec.EXACTLY),
-        MeasureSpec.makeMeasureSpec(tabLayout.height, MeasureSpec.EXACTLY)
-      )
-      tabLayout.layout(tabLayout.left, tabLayout.top, tabLayout.right, tabLayout.bottom)
+  private fun loadIcon(menuItem: MenuItem, iconUri: String) {
+    val cached = imageCache.get(iconUri)
+    if (cached != null) {
+      menuItem.icon = BitmapDrawable(context.resources, cached)
+    } else if (iconUri.startsWith("file://") || iconUri.startsWith("/")) {
+      try {
+        val path = iconUri.removePrefix("file://")
+        val bitmap = BitmapFactory.decodeFile(path)
+        if (bitmap != null) {
+          imageCache.put(iconUri, bitmap)
+          menuItem.icon = BitmapDrawable(context.resources, bitmap)
+        }
+      } catch (e: Exception) {
+        Log.w(TAG, "Failed to load icon: $iconUri", e)
+      }
+    } else {
+      executor.execute {
+        try {
+          val bitmap = URL(iconUri).openStream().use { stream ->
+            BitmapFactory.decodeStream(stream)
+          }
+          if (bitmap != null) {
+            imageCache.put(iconUri, bitmap)
+            mainHandler.post {
+              menuItem.icon = BitmapDrawable(context.resources, bitmap)
+            }
+          }
+        } catch (e: Exception) {
+          Log.w(TAG, "Failed to load icon: $iconUri", e)
+        }
+      }
     }
+  }
+
+  // RN swallows requestLayout from native children, so re-run the full
+  // measure/layout pass ourselves whenever the menu or icons change.
+  private val measureAndLayout = Runnable {
+    measure(
+      MeasureSpec.makeMeasureSpec(width, MeasureSpec.EXACTLY),
+      MeasureSpec.makeMeasureSpec(height, MeasureSpec.EXACTLY)
+    )
+    layout(left, top, right, bottom)
+  }
+
+  override fun requestLayout() {
+    super.requestLayout()
+    post(measureAndLayout)
   }
 
   fun setSelectedIndex(index: Int) {
     selectedIndex = index
-    if (index in 0 until tabLayout.tabCount) {
-      tabLayout.getTabAt(index)?.select()
+    if (index in 0 until bottomNav.menu.size()) {
+      bottomNav.selectedItemId = index
     }
   }
 
   fun setBarTintColor(color: Int?) {
     if (color != null) {
-      tabLayout.backgroundTintList =
-        android.content.res.ColorStateList.valueOf(color)
+      bottomNav.backgroundTintList = ColorStateList.valueOf(color)
     }
   }
 
   fun setActiveTintColor(color: Int?) {
     activeColor = color
-    if (color != null) {
-      tabLayout.setSelectedTabIndicatorColor(color)
-    }
-    applyTabTextColors()
+    applyItemColors()
   }
 
   fun setInactiveTintColor(color: Int?) {
     inactiveColor = color
-    applyTabTextColors()
+    applyItemColors()
   }
 
-  private fun applyTabTextColors() {
+  private fun applyItemColors() {
     if (activeColor == null && inactiveColor == null) return
-    val current = tabLayout.tabTextColors
+    val current = bottomNav.itemTextColor
     val active = activeColor
-      ?: current?.getColorForState(intArrayOf(android.R.attr.state_selected), 0)
+      ?: current?.getColorForState(intArrayOf(android.R.attr.state_checked), 0)
       ?: current?.defaultColor ?: 0
     val inactive = inactiveColor ?: current?.defaultColor ?: 0
-    tabLayout.setTabTextColors(inactive, active)
+    val colors = ColorStateList(
+      arrayOf(intArrayOf(android.R.attr.state_checked), intArrayOf()),
+      intArrayOf(active, inactive)
+    )
+    bottomNav.itemTextColor = colors
+    bottomNav.itemIconTintList = colors
   }
 
   fun setTranslucent(translucent: Boolean) {
