@@ -3,10 +3,7 @@ package com.lodev09.truetabs
 import android.content.Context
 import android.content.res.ColorStateList
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.graphics.drawable.BitmapDrawable
-import android.os.Handler
-import android.os.Looper
 import android.util.Log
 import android.util.LruCache
 import android.view.ContextThemeWrapper
@@ -14,12 +11,18 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View.MeasureSpec
 import android.widget.FrameLayout
+import com.facebook.common.executors.UiThreadImmediateExecutorService
+import com.facebook.common.references.CloseableReference
+import com.facebook.datasource.DataSource
+import com.facebook.drawee.backends.pipeline.Fresco
+import com.facebook.imagepipeline.datasource.BaseBitmapDataSubscriber
+import com.facebook.imagepipeline.image.CloseableImage
+import com.facebook.imagepipeline.request.ImageRequest
 import com.facebook.react.bridge.ReactContext
 import com.facebook.react.uimanager.UIManagerHelper
+import com.facebook.react.views.imagehelper.ResourceDrawableIdHelper
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.navigation.NavigationBarView
-import java.net.URL
-import java.util.concurrent.Executors
 
 class TrueTabsView(context: Context) : FrameLayout(context) {
   private val materialContext: Context = ContextThemeWrapper(context, com.google.android.material.R.style.Theme_MaterialComponents_DayNight)
@@ -31,10 +34,7 @@ class TrueTabsView(context: Context) : FrameLayout(context) {
   companion object {
     private const val TAG = "TrueTabsView"
     private val imageCache = LruCache<String, Bitmap>(50)
-    private val executor = Executors.newFixedThreadPool(2)
   }
-
-  private val mainHandler = Handler(Looper.getMainLooper())
 
   init {
     bottomNav.layoutParams = LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT)
@@ -97,34 +97,34 @@ class TrueTabsView(context: Context) : FrameLayout(context) {
     val cached = imageCache.get(iconUri)
     if (cached != null) {
       menuItem.icon = BitmapDrawable(context.resources, cached)
-    } else if (iconUri.startsWith("file://") || iconUri.startsWith("/")) {
-      try {
-        val path = iconUri.removePrefix("file://")
-        val bitmap = BitmapFactory.decodeFile(path)
-        if (bitmap != null) {
-          imageCache.put(iconUri, bitmap)
-          menuItem.icon = BitmapDrawable(context.resources, bitmap)
-        }
-      } catch (e: Exception) {
-        Log.w(TAG, "Failed to load icon: $iconUri", e)
-      }
-    } else {
-      executor.execute {
-        try {
-          val bitmap = URL(iconUri).openStream().use { stream ->
-            BitmapFactory.decodeStream(stream)
-          }
-          if (bitmap != null) {
-            imageCache.put(iconUri, bitmap)
-            mainHandler.post {
-              menuItem.icon = BitmapDrawable(context.resources, bitmap)
-            }
-          }
-        } catch (e: Exception) {
-          Log.w(TAG, "Failed to load icon: $iconUri", e)
-        }
-      }
+      return
     }
+
+    // Bare names are bundled drawable resources (release builds).
+    if (!iconUri.contains("://") && !iconUri.startsWith("/")) {
+      menuItem.icon = ResourceDrawableIdHelper.getResourceDrawable(context, iconUri)
+      return
+    }
+
+    val uri = if (iconUri.startsWith("/")) "file://$iconUri" else iconUri
+    val request = ImageRequest.fromUri(uri) ?: return
+    val dataSource = Fresco.getImagePipeline().fetchDecodedImage(request, context)
+    dataSource.subscribe(
+      object : BaseBitmapDataSubscriber() {
+        override fun onNewResultImpl(bitmap: Bitmap?) {
+          if (bitmap == null) return
+          // The pipeline reclaims its bitmap after this callback; keep a copy.
+          val copy = bitmap.copy(bitmap.config ?: Bitmap.Config.ARGB_8888, false)
+          imageCache.put(iconUri, copy)
+          menuItem.icon = BitmapDrawable(context.resources, copy)
+        }
+
+        override fun onFailureImpl(dataSource: DataSource<CloseableReference<CloseableImage>>) {
+          Log.w(TAG, "Failed to load icon: $iconUri", dataSource.failureCause)
+        }
+      },
+      UiThreadImmediateExecutorService.getInstance()
+    )
   }
 
   // RN swallows requestLayout from native children, so re-run the full
