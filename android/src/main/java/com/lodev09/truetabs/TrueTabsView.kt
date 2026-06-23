@@ -17,6 +17,8 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View.MeasureSpec
 import android.widget.FrameLayout
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import com.facebook.common.executors.UiThreadImmediateExecutorService
 import com.facebook.common.references.CloseableReference
 import com.facebook.datasource.DataSource
@@ -48,6 +50,16 @@ class TrueTabsView(context: Context) : FrameLayout(context) {
     bottomNav.layoutParams = LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT)
     bottomNav.labelVisibilityMode = NavigationBarView.LABEL_VISIBILITY_LABELED
     addView(bottomNav)
+
+    // BottomNavigationView's default inset listener pads its bottom by
+    // getSystemWindowInsetBottom(), which includes the IME — when the keyboard
+    // opens, the item row gets pushed out of the bar. Apply only the system-bar
+    // inset so the keyboard doesn't collapse the tabs.
+    ViewCompat.setOnApplyWindowInsetsListener(bottomNav) { view, insets ->
+      val bars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+      view.setPadding(bars.left, view.paddingTop, bars.right, bars.bottom)
+      insets
+    }
 
     bottomNav.setOnItemSelectedListener { item ->
       val index = item.itemId
