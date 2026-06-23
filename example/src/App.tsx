@@ -1,5 +1,5 @@
 import { useRef, useState } from 'react';
-import { View, Text, StyleSheet, Platform } from 'react-native';
+import { View, Text, StyleSheet, Platform, TextInput } from 'react-native';
 import { type TrueTabsRef } from '@lodev09/react-native-true-tabs';
 import { TrueSheet } from '@lodev09/react-native-true-sheet';
 import { TAB_BAR_HEIGHT, useTheme } from './theme';
@@ -40,6 +40,21 @@ export default function App() {
           initialDetentIndex={0}
           dimmedDetentIndex={1}
           dismissible={false}
+          header={
+            <View style={styles.header}>
+              <TextInput
+                style={[
+                  styles.search,
+                  {
+                    backgroundColor: c.secondaryBackground,
+                    color: c.text,
+                  },
+                ]}
+                placeholder="Search"
+                placeholderTextColor={c.secondaryText}
+              />
+            </View>
+          }
           footer={
             <Tabs.Bar
               style={styles.tabBar}
@@ -90,5 +105,15 @@ const styles = StyleSheet.create({
   },
   tabBar: {
     height: TAB_BAR_HEIGHT,
+  },
+  header: {
+    paddingHorizontal: 16,
+    paddingTop: 32,
+  },
+  search: {
+    height: 40,
+    borderRadius: 10,
+    paddingHorizontal: 12,
+    fontSize: 16,
   },
 });
